@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Vyralnet",
+    "slug": "vyralnet",
+    "version": "1.0.0",
+    "scheme": "vyralnet",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vyralnet.app"
+    },
+    "android": {
+      "package": "com.vyralnet.app"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}
