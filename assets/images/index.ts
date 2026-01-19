@@ -37,11 +37,14 @@ export { default as Goldstar } from './star.svg';
 export const LoadingSpinner = require('./loading-spinner.png');
 export { default as InstagramFillSvg } from './ri_instagram-fill.svg';
 export { default as EditPen } from './editpen.svg';
-
+export { default as EditBlack } from './editblack.svg';
+export { default as GreenCrown } from './greencrown.svg';
+export { default as HourglassGreen } from './glasshourgreen.svg';
 // Vectors
 export { default as Vector1Svg } from './Vector 1.svg';
 export { default as Vector2Svg } from './Vector 2.svg';
 export const VectorTop = require('./vector-top.png');
+export { default as VSContainer } from './vscontainer.svg';
 
 // Additional SVGs
 export { default as Frame1984077131Svg } from './uploadimage.svg';
@@ -70,10 +73,14 @@ export { default as WizardBadge2Svg } from './wizardbadge2.svg';
 // Notification Icons
 export { default as ReadSvg } from './read.svg';
 export { default as UnreadSvg } from './unread.svg';
+export { default as EmptyNotificationSvg } from './emptynotification.svg';
 
 // Email Icons
 export { default as SendSvg } from './send.svg';
 export { default as AttachmentSvg } from './attachment.svg';
+
+// Chat Icons
+export { default as EmptyChatSvg } from './emptychat.svg';
 
 // Gallery Images
 export const Gallery1 = require('./gallery1.png');
@@ -88,6 +95,8 @@ export { default as SCardSvg } from './s-card.svg';
 export { default as SQuestionSvg } from './s-question.svg';
 export { default as SBinSvg } from './s-bin.svg';
 export { default as SLogoutSvg } from './s-logout.svg';
+export { default as PaperPen } from './paperpen.svg';
+
 
 // Payment
 export { default as AtmCardSvg } from './atmcard.svg';

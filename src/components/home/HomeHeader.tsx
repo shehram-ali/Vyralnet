@@ -12,7 +12,7 @@ interface HomeHeaderProps {
 
 export default function HomeHeader({ userName, userAvatar, showFavoriteIcon = false, onFavoritePress, onNotificationPress }: HomeHeaderProps) {
   return (
-    <View className="flex-row items-center justify-between px-5 py-4 bg-[#F8F8FB]">
+    <View className="flex-row items-center pt-10 justify-between px-5 py-4 bg-[#F8F8FB]">
       {/* Left side - Avatar and Name */}
       <View className="flex-row items-center flex-1">
         {userAvatar ? (

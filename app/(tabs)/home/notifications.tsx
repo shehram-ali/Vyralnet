@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ReadSvg, UnreadSvg } from '../../../assets/images';
+import { ReadSvg, UnreadSvg, EmptyNotificationSvg } from '../../../assets/images';
 
 interface Notification {
   id: string;
@@ -176,7 +176,7 @@ export default function NotificationsScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View className="items-center justify-center py-20">
-            <MaterialCommunityIcons name="bell-outline" size={60} color="#CCC" />
+            <EmptyNotificationSvg width={200} height={200} />
             <Text className="text-gray-400 text-base mt-4">No notifications</Text>
           </View>
         }

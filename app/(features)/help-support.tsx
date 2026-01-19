@@ -229,8 +229,8 @@ export default function HelpSupportScreen() {
       {/* Success Bottom Sheet */}
       <SuccessBottomSheet
         visible={showSuccessModal}
-        title="Request Submitted!"
-        message="Your support request has been submitted successfully. We'll get back to you soon."
+        title="Your complaint has been created successfully."
+        message="Our team will contact you shortly."
         buttonText="Continue"
         onButtonPress={handleContinue}
         onClose={handleContinue}

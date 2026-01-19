@@ -9,7 +9,8 @@ import {
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Frame1984077131Svg } from '../../assets/images';
+import { useAuth } from '../../src/hooks/useAuth';
+import { Frame1984077131Svg, EmptyChatSvg } from '../../assets/images';
 
 interface ChatItem {
   id: string;
@@ -131,6 +132,9 @@ export default function ChatScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('messages');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { user } = useAuth();
+  const isBrand = user?.userType === 'brand';
 
   const filteredChats = mockChats.filter((chat) =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -282,15 +286,17 @@ export default function ChatScreen() {
       {/* Header */}
       <View className="px-5 pt-6 pb-4 bg-[#F8F8FB]">
         <Text className="text-3xl font-bold text-black">
-          {activeTab === 'messages' ? 'Chat' : 'Email'}
+          {isBrand ? (activeTab === 'messages' ? 'Chat' : 'Email') : 'Chat'}
         </Text>
       </View>
 
-      {/* Tabs */}
-      <View className="flex-row px-5 pb-4 bg-[#F8F8FB]">
-        {renderTab('messages', 'Messages')}
-        {renderTab('email', 'Email', 3)}
-      </View>
+      {/* Tabs - Only show for brands */}
+      {isBrand && (
+        <View className="flex-row px-5 pb-4 bg-[#F8F8FB]">
+          {renderTab('messages', 'Messages')}
+          {renderTab('email', 'Email', 3)}
+        </View>
+      )}
 
       {/* Search Bar */}
       <View className="px-5 pb-4 bg-[#F8F8FB]">
@@ -306,8 +312,9 @@ export default function ChatScreen() {
         </View>
       </View>
 
-      {/* Chat List */}
-      {activeTab === 'messages' ? (
+      {/* Content */}
+      {(!isBrand || activeTab === 'messages') ? (
+        // Show chat list for influencers OR when brand has messages tab active
         <FlatList
           data={filteredChats}
           renderItem={renderChatItem}
@@ -316,12 +323,13 @@ export default function ChatScreen() {
           contentContainerStyle={{ paddingTop: 8, paddingBottom: 100 }}
           ListEmptyComponent={
             <View className="items-center justify-center py-20">
-              <MaterialCommunityIcons name="message-text-outline" size={60} color="#CCC" />
+              <EmptyChatSvg width={200} height={200} />
               <Text className="text-gray-400 text-base mt-4">No messages yet</Text>
             </View>
           }
         />
       ) : (
+        // Show email list only for brands when email tab is active
         <FlatList
           data={mockEmails}
           renderItem={renderEmailItem}

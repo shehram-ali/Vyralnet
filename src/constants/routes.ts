@@ -41,12 +41,15 @@ export const ROUTES = {
     REPORTS: '/(features)/reports' as const,
     TRANSACTIONS: '/(features)/transactions' as const,
     EDIT_PROFILE: '/(features)/edit-profile' as const,
+    PUBLIC_PROFILE: '/(features)/public-profile' as const,
+    EDIT_PACKAGES: '/(features)/edit-packages' as const,
     NOTIFICATIONS: '/(features)/notifications' as const,
     CHANGE_PASSWORD: '/(features)/change-password' as const,
     PAYMENT_METHODS: '/(features)/payment-methods' as const,
     ADD_PAYMENT_METHOD: '/(features)/add-payment-method' as const,
     HELP_SUPPORT: '/(features)/help-support' as const,
     DELETE_ACCOUNT: '/(features)/delete-account' as const,
+    MEMBERSHIP: '/(features)/membership' as const,
   },
 
   // Brand-specific feature routes
