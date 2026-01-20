@@ -10,27 +10,51 @@ import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
+import { useAuth } from '../../src/hooks/useAuth';
 import InfluencerJobCard from '../../src/components/common/InfluencerJobCard';
+import ReportCard from '../../src/components/common/ReportCard';
 import ReportFilterBottomSheet, {
   ReportFilterState,
 } from '../../src/components/reports/ReportFilterBottomSheet';
-import ChallengeTypePickerBottomSheet from '../../src/components/reports/ChallengeTypePickerBottomSheet';
+import { PickerBottomSheet } from '../../src/components/common';
+import InfluencerReportFilterBottomSheet, {
+  InfluencerReportFilterState,
+} from '../../src/components/reports/InfluencerReportFilterBottomSheet';
 
-interface Report {
+// Type definitions for unified reports
+interface BaseReport {
   id: string;
+  type: 'challenge' | 'job';
+  category: string;
+}
+
+interface BrandReport extends BaseReport {
+  userType: 'brand';
   influencerId: string;
   influencerName: string;
   influencerUsername: string;
   reportId: string;
   followers: string;
-  category: string;
   status: 'Content Submitted';
-  type: 'challenge' | 'job';
 }
 
-const mockReports: Report[] = [
+interface InfluencerReport extends BaseReport {
+  userType: 'influencer';
+  companyName: string;
+  companyLogo?: any;
+  status: 'in-progress' | 'completed' | 'pending';
+  title: string;
+  budget: string;
+  contentStatus?: 'pending' | 'submitted';
+}
+
+type Report = BrandReport | InfluencerReport;
+
+// Mock data for brand users
+const mockBrandReports: BrandReport[] = [
   {
     id: '1',
+    userType: 'brand',
     influencerId: '1',
     influencerName: 'Eten Hunt',
     influencerUsername: '@eten_hunt_1235',
@@ -42,6 +66,7 @@ const mockReports: Report[] = [
   },
   {
     id: '2',
+    userType: 'brand',
     influencerId: '2',
     influencerName: 'Eten Hunt',
     influencerUsername: '@eten_hunt_1235',
@@ -53,6 +78,7 @@ const mockReports: Report[] = [
   },
   {
     id: '3',
+    userType: 'brand',
     influencerId: '3',
     influencerName: 'Eten Hunt',
     influencerUsername: '@eten_hunt_1235',
@@ -64,6 +90,7 @@ const mockReports: Report[] = [
   },
   {
     id: '4',
+    userType: 'brand',
     influencerId: '4',
     influencerName: 'Eten Hunt',
     influencerUsername: '@eten_hunt_1235',
@@ -75,45 +102,150 @@ const mockReports: Report[] = [
   },
 ];
 
+// Mock data for influencer users
+const mockInfluencerReports: InfluencerReport[] = [
+  {
+    id: '1',
+    userType: 'influencer',
+    companyName: 'Apple Inc.',
+    status: 'in-progress',
+    title: 'Expert Influencer Required...',
+    budget: '$500',
+    category: 'Lifestyle',
+    type: 'challenge',
+    contentStatus: 'pending',
+  },
+  {
+    id: '2',
+    userType: 'influencer',
+    companyName: 'Apple Inc.',
+    status: 'completed',
+    title: 'Expert Influencer Required...',
+    budget: '$300',
+    category: 'Lifestyle',
+    type: 'challenge',
+    contentStatus: 'submitted',
+  },
+  {
+    id: '3',
+    userType: 'influencer',
+    companyName: 'Apple Inc.',
+    status: 'in-progress',
+    title: 'Cosmetic Videography',
+    budget: '$100',
+    category: 'Beauty',
+    type: 'job',
+    contentStatus: 'pending',
+  },
+  {
+    id: '4',
+    userType: 'influencer',
+    companyName: 'Apple Inc.',
+    status: 'completed',
+    title: 'Cosmetic Videography',
+    budget: '$100',
+    category: 'Beauty',
+    type: 'job',
+    contentStatus: 'submitted',
+  },
+  {
+    id: '5',
+    userType: 'influencer',
+    companyName: 'Samsung',
+    status: 'pending',
+    title: 'Product Launch Campaign',
+    budget: '$450',
+    category: 'Technology',
+    type: 'challenge',
+    contentStatus: 'pending',
+  },
+];
+
 const challengeTypes = ['All', 'Expert Influencer', 'Beauty Expert', 'Tech Specialist', 'Food Blogger', 'Travel Vlogger'];
 
 type TabType = 'challenge' | 'job';
 
 export default function ReportsScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const isBrand = user?.userType === 'brand';
+
+  // Select appropriate data based on user type
+  const reportsData: Report[] = isBrand ? mockBrandReports : mockInfluencerReports;
+
   const [activeTab, setActiveTab] = useState<TabType>('challenge');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [showChallengeTypePicker, setShowChallengeTypePicker] = useState(false);
+
+  // Brand filter state
   const [filters, setFilters] = useState<ReportFilterState>({
     challengeType: 'Expert Influencer',
     date: null,
   });
 
-  const filteredReports = useMemo(() => {
-    return mockReports.filter((report) => {
-      if (!report) return false;
+  // Influencer filter state
+  const [influencerFilters, setInfluencerFilters] = useState<InfluencerReportFilterState>({
+    date: null,
+  });
 
-      // Filter by search query (name)
-      const matchesSearch =
-        searchQuery === '' ||
-        report.influencerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        report.influencerUsername.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredReports = useMemo(() => {
+    return reportsData.filter((report) => {
+      if (!report) return false;
 
       // Filter by tab
       const matchesTab = report.type === activeTab;
 
+      // User-type-aware search logic
+      const matchesSearch = searchQuery === '' || (() => {
+        if (isBrand) {
+          const brandReport = report as BrandReport;
+          return (
+            brandReport.influencerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            brandReport.influencerUsername.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        } else {
+          const influencerReport = report as InfluencerReport;
+          return (
+            influencerReport.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            influencerReport.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            influencerReport.category.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        }
+      })();
+
       return matchesSearch && matchesTab;
     });
-  }, [searchQuery, activeTab]);
+  }, [searchQuery, activeTab, reportsData, isBrand]);
 
-  const handleViewContent = (_reportId: string) => {
-    router.push('/(features)/(brand)/content-details');
+  const handleViewContent = (reportId: string) => {
+    router.push({
+      pathname: '/(features)/(brand)/content-details',
+      params: { id: reportId },
+    } as any);
   };
 
   const handleViewDetails = (reportId: string) => {
-    console.log('View details for report:', reportId);
-    // Navigate to details screen
+    if (isBrand) {
+      router.push({
+        pathname: '/(features)/(brand)/job-details',
+        params: { reportId },
+      } as any);
+    } else {
+      // Find the report to determine if it's a challenge or job
+      const report = reportsData.find(r => r.id === reportId) as InfluencerReport;
+      if (report?.type === 'challenge') {
+        router.push({
+          pathname: '/(features)/(influencer)/challenge-details',
+          params: { id: reportId },
+        } as any);
+      } else {
+        router.push({
+          pathname: '/(features)/(influencer)/job-details',
+          params: { id: reportId },
+        } as any);
+      }
+    }
   };
 
   const handleFilter = () => {
@@ -122,6 +254,10 @@ export default function ReportsScreen() {
 
   const handleApplyFilters = (newFilters: ReportFilterState) => {
     setFilters(newFilters);
+  };
+
+  const handleApplyInfluencerFilters = (newFilters: InfluencerReportFilterState) => {
+    setInfluencerFilters(newFilters);
   };
 
   const handleOpenChallengeTypePicker = () => {
@@ -166,35 +302,62 @@ export default function ReportsScreen() {
   };
 
   const renderReportCard = ({ item }: { item: Report }) => {
-    return (
-      <InfluencerJobCard
-        influencerName={item.influencerName}
-        influencerUsername={item.influencerUsername}
-        statusText={item.status}
-        statusBgColor="#BEF3D4"
-        details={[
-          { label: 'ID', value: item.reportId },
-          { label: 'Followers', value: item.followers },
-          {
-            label: 'Category',
-            value: item.category,
-            isBadge: true,
-            badgeColor: '#D4EDD4',
-          },
-        ]}
-        buttons={[
-          {
-            label: 'View Content',
-            onPress: () => handleViewContent(item.id),
-          },
-          {
-            label: 'View Details',
-            onPress: () => handleViewDetails(item.id),
-          },
-        ]}
-      />
-    );
+    if (isBrand) {
+      const brandReport = item as BrandReport;
+      return (
+        <InfluencerJobCard
+          influencerName={brandReport.influencerName}
+          influencerUsername={brandReport.influencerUsername}
+          statusText={brandReport.status}
+          statusBgColor="#BEF3D4"
+          details={[
+            { label: 'ID', value: brandReport.reportId },
+            { label: 'Followers', value: brandReport.followers },
+            {
+              label: 'Category',
+              value: brandReport.category,
+              isBadge: true,
+              badgeColor: '#D4EDD4',
+            },
+          ]}
+          buttons={[
+            {
+              label: 'View Content',
+              onPress: () => handleViewContent(brandReport.id),
+            },
+            {
+              label: 'View Details',
+              onPress: () => handleViewDetails(brandReport.id),
+            },
+          ]}
+        />
+      );
+    } else {
+      const influencerReport = item as InfluencerReport;
+      return (
+        <ReportCard
+          companyName={influencerReport.companyName}
+          status={influencerReport.status}
+          title={influencerReport.title}
+          budget={influencerReport.budget}
+          type={influencerReport.type}
+          category={influencerReport.category}
+          contentStatus={influencerReport.contentStatus}
+          onViewContent={() => handleViewContent(influencerReport.id)}
+          onViewDetails={() => handleViewDetails(influencerReport.id)}
+        />
+      );
+    }
   };
+
+  // Dynamic labels based on user type
+  const tabLabels = isBrand
+    ? { challenge: 'My Challenges', job: 'Jobs' }
+    : { challenge: 'Challenges', job: 'Jobs' };
+
+  const searchPlaceholder = isBrand
+    ? 'Search by influencer name'
+    : 'Search ';
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
@@ -206,15 +369,17 @@ export default function ReportsScreen() {
           </TouchableOpacity>
           <Text className="text-lg font-bold text-black ml-4">Reports</Text>
         </View>
-        <TouchableOpacity onPress={handleFilter} activeOpacity={0.7}>
-          <Feather name="filter" size={24} color="black" />
-        </TouchableOpacity>
+      
+          <TouchableOpacity onPress={handleFilter} className='w-6 h-6' activeOpacity={0.7}>
+            <Feather name="filter" size={18} color="black" />
+          </TouchableOpacity>
+    
       </View>
 
       {/* Tabs */}
       <View className="flex-row px-5 py-3 bg-[#F8F8FB]">
-        {renderTab('challenge', 'My Challenges')}
-        {renderTab('job', 'Jobs')}
+        {renderTab('challenge', tabLabels.challenge)}
+        {renderTab('job', tabLabels.job)}
       </View>
 
       {/* Search Bar */}
@@ -223,7 +388,7 @@ export default function ReportsScreen() {
           <MaterialCommunityIcons name="magnify" size={24} color="#999" />
           <TextInput
             className="flex-1 ml-2 text-base text-black"
-            placeholder="Search"
+            placeholder={searchPlaceholder}
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -249,23 +414,37 @@ export default function ReportsScreen() {
         }
       />
 
-      {/* Filter Bottom Sheet */}
-      <ReportFilterBottomSheet
-        visible={showFilterSheet}
-        currentFilters={filters}
-        onClose={() => setShowFilterSheet(false)}
-        onApplyFilters={handleApplyFilters}
-        onOpenChallengeTypePicker={handleOpenChallengeTypePicker}
-      />
+      {/* Filter Bottom Sheets */}
+      {isBrand ? (
+        <>
+          {/* Brand Filter Bottom Sheet */}
+          <ReportFilterBottomSheet
+            visible={showFilterSheet}
+            currentFilters={filters}
+            onClose={() => setShowFilterSheet(false)}
+            onApplyFilters={handleApplyFilters}
+            onOpenChallengeTypePicker={handleOpenChallengeTypePicker}
+          />
 
-      {/* Challenge Type Picker Bottom Sheet */}
-      <ChallengeTypePickerBottomSheet
-        visible={showChallengeTypePicker}
-        selectedType={filters.challengeType}
-        types={challengeTypes}
-        onClose={handleCloseChallengeTypePicker}
-        onSelectType={handleSelectChallengeType}
-      />
+          {/* Challenge Type Picker Bottom Sheet */}
+          <PickerBottomSheet
+            visible={showChallengeTypePicker}
+            onClose={handleCloseChallengeTypePicker}
+            title="Select Challenge Type"
+            items={challengeTypes}
+            selectedItem={filters.challengeType}
+            onSelect={handleSelectChallengeType}
+          />
+        </>
+      ) : (
+        /* Influencer Filter Bottom Sheet */
+        <InfluencerReportFilterBottomSheet
+          visible={showFilterSheet}
+          currentFilters={influencerFilters}
+          onClose={() => setShowFilterSheet(false)}
+          onApplyFilters={handleApplyInfluencerFilters}
+        />
+      )}
     </SafeAreaView>
   );
 }

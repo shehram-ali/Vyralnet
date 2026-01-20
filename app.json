@@ -6,6 +6,7 @@
     "scheme": "vyralnet",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"

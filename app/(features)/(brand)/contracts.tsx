@@ -14,7 +14,7 @@ import InfluencerJobCard from '../../../src/components/common/InfluencerJobCard'
 import ContractFilterBottomSheet, {
   ContractFilterState,
 } from '../../../src/components/contracts/ContractFilterBottomSheet';
-import ContractStatusPickerBottomSheet from '../../../src/components/contracts/ContractStatusPickerBottomSheet';
+import { PickerBottomSheet } from '../../../src/components/common';
 
 interface Contract {
   id: string;
@@ -261,12 +261,13 @@ export default function ContractsScreen() {
       />
 
       {/* Status Picker Bottom Sheet */}
-      <ContractStatusPickerBottomSheet
+      <PickerBottomSheet
         visible={showStatusPicker}
-        selectedStatus={filters.status}
-        statuses={contractStatuses}
         onClose={handleCloseStatusPicker}
-        onSelectStatus={handleSelectStatus}
+        title="Select Status"
+        items={contractStatuses}
+        selectedItem={filters.status}
+        onSelect={handleSelectStatus}
       />
     </SafeAreaView>
   );

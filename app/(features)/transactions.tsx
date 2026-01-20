@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TransactionCard from '../../src/components/common/TransactionCard';
+import { EmptyTransactionSvg } from 'assets/images';
 
 interface Transaction {
   id: string;
@@ -256,10 +257,10 @@ export default function TransactionsScreen() {
             <View key={item.id}>{renderTransactionCard({ item })}</View>
           ))
         ) : (
-          <View className="items-center justify-center py-20">
-            <MaterialCommunityIcons name="currency-usd-off" size={60} color="#CCC" />
-            <Text className="text-gray-400 text-base mt-4">No transactions found</Text>
-          </View>
+         <View className="items-center justify-center py-20">
+              <EmptyTransactionSvg width={240} height={220} />
+              
+            </View>
         )}
       </ScrollView>
     </SafeAreaView>

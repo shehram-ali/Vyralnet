@@ -53,7 +53,7 @@ export default function SplashScreen() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Navigate to onboarding screen
-      router.replace(ROUTES.ONBOARDING.INDEX);
+      router.replace(ROUTES.TABS.HOME);
     };
 
     startAnimations();

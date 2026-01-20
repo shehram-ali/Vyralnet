@@ -3,10 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Platform } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
-import ParticipantsPickerBottomSheet from './ParticipantsPickerBottomSheet';
-import FollowersRangePickerBottomSheet from './FollowersRangePickerBottomSheet';
-import ChallengeCategoryPickerBottomSheet from './ChallengeCategoryPickerBottomSheet';
-import LocationPickerBottomSheet from './LocationPickerBottomSheet';
+import { PickerBottomSheet } from '@/components/common';
 
 interface ChallengeDetailsTabProps {
   challengeTitle: string;
@@ -49,6 +46,10 @@ const challengeCategories = [
   'Travel',
   'Fitness',
 ];
+
+const participantsOptions = ['10', '20', '32', '50', '100', '200', '500'];
+const followersRangeOptions = ['1k-10k', '10k-50k', '50k-100k', '100k-500k', '500k-1M', '1M+'];
+const locationOptions = ['United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Other'];
 
 export default function ChallengeDetailsTab({
   challengeTitle,
@@ -329,32 +330,41 @@ export default function ChallengeDetailsTab({
       </TouchableOpacity>
 
       {/* Pickers */}
-      <ParticipantsPickerBottomSheet
+      <PickerBottomSheet
         visible={showParticipantsPicker}
-        selectedParticipants={participants}
         onClose={() => setShowParticipantsPicker(false)}
+        title="Select Participants"
+        items={participantsOptions}
+        selectedItem={participants}
         onSelect={setParticipants}
+        getItemLabel={(item) => `${item} participants`}
       />
 
-      <FollowersRangePickerBottomSheet
+      <PickerBottomSheet
         visible={showFollowersRangePicker}
-        selectedRange={followersRange}
         onClose={() => setShowFollowersRangePicker(false)}
+        title="Select Followers Range"
+        items={followersRangeOptions}
+        selectedItem={followersRange}
         onSelect={setFollowersRange}
+        getItemLabel={(item) => `${item} followers`}
       />
 
-      <ChallengeCategoryPickerBottomSheet
+      <PickerBottomSheet
         visible={showCategoryPicker}
-        selectedCategory={category}
-        categories={challengeCategories}
         onClose={() => setShowCategoryPicker(false)}
-        onSelectCategory={setCategory}
+        title="Select Category"
+        items={challengeCategories}
+        selectedItem={category}
+        onSelect={setCategory}
       />
 
-      <LocationPickerBottomSheet
+      <PickerBottomSheet
         visible={showLocationPicker}
-        selectedLocation={location}
         onClose={() => setShowLocationPicker(false)}
+        title="Influencer Location"
+        items={locationOptions}
+        selectedItem={location}
         onSelect={setLocation}
       />
     </>

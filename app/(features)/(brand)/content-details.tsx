@@ -3,11 +3,14 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Gallery2 } from '../../../assets/images';
+import { Gallery2, NoFeedbackSvg } from '../../../assets/images';
+import { useAuth } from '../../../src/hooks/useAuth';
 
 export default function ContentDetailsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { user } = useAuth();
+  const isBrand = user?.userType === 'brand';
 
   // Mock content data
   const content = {
@@ -16,13 +19,21 @@ export default function ContentDetailsScreen() {
     totalViews: '250k',
     likesReaction: '150k',
     instagramUrl: 'https://instagram.com',
-    feedback: [
+    // Set to null or empty array to show "No Feedback Yet"
+    feedback: params.hasFeedback === 'true' ? [
       { label: 'Skills', rating: 5 },
       { label: 'Quality of Work', rating: 4 },
       { label: 'Quality of Work', rating: 5 },
       { label: 'Quality of Work', rating: 4 },
       { label: 'Quality of Work', rating: 4 },
-    ],
+    ] : null,
+  };
+
+  // Calculate total score
+  const calculateTotalScore = () => {
+    if (!content.feedback || content.feedback.length === 0) return 0;
+    const total = content.feedback.reduce((acc, item) => acc + item.rating, 0);
+    return (total / content.feedback.length).toFixed(1);
   };
 
   const renderStars = (rating: number) => {
@@ -57,21 +68,25 @@ export default function ContentDetailsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center pt-10 justify-between px-5 py-4 border-b border-gray-200">
+      <View className="flex-row items-center justify-between px-5 py-4">
         <View className="flex-row items-center flex-1">
           <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
             <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
           </TouchableOpacity>
-          <Text className="text-lg font-medium text-black ml-2">{content.influencerName}</Text>
+          <Text className="text-lg font-semibold text-black ml-2">
+            {isBrand ? content.influencerName : 'Review Content'}
+          </Text>
         </View>
-        <TouchableOpacity
-          onPress={handleSendMessage}
-          activeOpacity={0.8}
-          className="px-4 py-2 rounded-lg"
-          style={{ backgroundColor: '#5EBD3E' }}
-        >
-          <Text className="text-sm font-semibold text-white">Send Message</Text>
-        </TouchableOpacity>
+        {isBrand && (
+          <TouchableOpacity
+            onPress={handleSendMessage}
+            activeOpacity={0.8}
+            className="px-4 py-2 rounded-lg"
+            style={{ backgroundColor: '#5EBD3E' }}
+          >
+            <Text className="text-sm font-semibold text-white">Send Message</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -151,16 +166,34 @@ export default function ContentDetailsScreen() {
 
         {/* Feedback Section */}
         <View className="px-5 pb-8">
-          <Text className="text-lg font-medium text-black mb-4">
-            Feedback to Influencer
+          <Text className="text-lg font-semibold text-black mb-4">
+            Content Feedback
           </Text>
 
-          {content.feedback.map((item, index) => (
-            <View key={index} className="flex-row items-center mb-3">
-              {renderStars(item.rating)}
-              <Text className="text-sm text-black">{item.label}</Text>
+          {content.feedback && content.feedback.length > 0 ? (
+            <>
+              {content.feedback.map((item, index) => (
+                <View key={index} className="flex-row items-center mb-3">
+                  {renderStars(item.rating)}
+                  <Text className="text-sm text-black">{item.label}</Text>
+                </View>
+              ))}
+
+              {/* Total Score */}
+              <View className="mt-4">
+                <Text className="text-base font-semibold text-black">
+                  Total Score: {calculateTotalScore()}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <View className="items-center justify-center py-8">
+              <NoFeedbackSvg width={80} height={80} />
+              <Text className="text-sm text-[#6C727F] mt-4">
+                No Feedback Yet
+              </Text>
             </View>
-          ))}
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -8,7 +8,7 @@ import { Frame1984077131Svg } from '../../assets/images';
 import ChallengeFilterBottomSheet, {
   ChallengeFilterState,
 } from '../../src/components/challenges/ChallengeFilterBottomSheet';
-import ChallengeCategoryPickerBottomSheet from '../../src/components/challenges/ChallengeCategoryPickerBottomSheet';
+import { PickerBottomSheet } from '../../src/components/common';
 import { ROUTES } from '../../src/constants';
 
 interface Challenge {
@@ -268,12 +268,13 @@ export default function ChallengesScreen() {
       />
 
       {/* Category Picker Bottom Sheet */}
-      <ChallengeCategoryPickerBottomSheet
+      <PickerBottomSheet
         visible={showCategoryPicker}
-        selectedCategory={filters.category}
-        categories={challengeCategories}
         onClose={handleCloseCategoryPicker}
-        onSelectCategory={handleSelectCategory}
+        title="Select Category"
+        items={challengeCategories}
+        selectedItem={filters.category}
+        onSelect={handleSelectCategory}
       />
     </SafeAreaView>
   );

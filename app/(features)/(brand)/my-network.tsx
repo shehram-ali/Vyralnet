@@ -14,8 +14,7 @@ import { Frame1984077131Svg, InstagramSvg } from '../../../assets/images';
 import NetworkFilterBottomSheet, {
   NetworkFilterState,
 } from '../../../src/components/network/NetworkFilterBottomSheet';
-import MyListPickerBottomSheet from '../../../src/components/network/MyListPickerBottomSheet';
-import StatusPickerBottomSheet from '../../../src/components/network/StatusPickerBottomSheet';
+import { PickerBottomSheet } from '../../../src/components/common';
 import SendEmailBottomSheet from '../../../src/components/network/SendEmailBottomSheet';
 
 interface NetworkInfluencer {
@@ -547,21 +546,23 @@ export default function MyNetworkScreen() {
       />
 
       {/* My List Picker Bottom Sheet */}
-      <MyListPickerBottomSheet
+      <PickerBottomSheet
         visible={showMyListPicker}
-        selectedList={filters.myList}
-        lists={myLists}
         onClose={handleCloseMyListPicker}
-        onSelectList={handleSelectMyList}
+        title="My List"
+        items={myLists}
+        selectedItem={filters.myList}
+        onSelect={handleSelectMyList}
       />
 
       {/* Status Picker Bottom Sheet */}
-      <StatusPickerBottomSheet
+      <PickerBottomSheet
         visible={showStatusPicker}
-        selectedStatus={filters.status}
-        statuses={statuses}
         onClose={handleCloseStatusPicker}
-        onSelectStatus={handleSelectStatus}
+        title="Select Status"
+        items={statuses}
+        selectedItem={filters.status}
+        onSelect={handleSelectStatus}
       />
 
       {/* Send Email Bottom Sheet */}

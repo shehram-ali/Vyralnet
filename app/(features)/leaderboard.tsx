@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Frame1984077131Svg, GreenCrown, HourglassGreen, VSContainer } from '../../assets/images';
-import ChallengePickerBottomSheet from '../../src/components/leaderboard/ChallengePickerBottomSheet';
+import { PickerBottomSheet } from '../../src/components/common';
 import { useAuth } from '../../src/hooks/useAuth';
 
 interface LeaderboardEntry {
@@ -522,12 +522,13 @@ export default function LeaderboardScreen() {
       </ScrollView>
 
       {/* Challenge Picker Bottom Sheet */}
-      <ChallengePickerBottomSheet
+      <PickerBottomSheet
         visible={showChallengePicker}
-        selectedChallenge={selectedChallenge}
-        challenges={challenges}
         onClose={() => setShowChallengePicker(false)}
-        onSelectChallenge={handleSelectChallenge}
+        title="Select Challenge"
+        items={challenges}
+        selectedItem={selectedChallenge}
+        onSelect={handleSelectChallenge}
       />
     </SafeAreaView>
   );
