@@ -101,7 +101,7 @@ export default function FilterBottomSheet({
                 style={{
                   width: 40,
                   height: 4,
-                  backgroundColor: '#E5E5E5',
+                  backgroundColor: '#F8F8FB',
                   borderRadius: 2,
                 }}
               />
@@ -109,9 +109,10 @@ export default function FilterBottomSheet({
 
             {/* Header */}
             <View className="flex-row items-center justify-between px-6 py-4">
-              <Text className="text-xl font-bold text-black">Refine your Search</Text>
-              <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
-                <MaterialCommunityIcons name="close" size={24} color="#000" />
+              <View></View>
+              <Text className="text-base font-semibold text-[#1D1C1C]">Refine your Search</Text>
+              <TouchableOpacity className='bg-white h-6 w-6 rounded-full shadow-[#00000014] drop-shadow-md' onPress={onClose} activeOpacity={0.7}>
+                <MaterialCommunityIcons name="close" size={21} color="#000" />
               </TouchableOpacity>
             </View>
 
@@ -207,9 +208,9 @@ export default function FilterBottomSheet({
                 onPress={handleReset}
                 activeOpacity={0.7}
                 className="flex-1 rounded-2xl py-4 items-center"
-                style={{ backgroundColor: '#E8E8E8' }}
+                style={{ backgroundColor: '#E3E3E3' }}
               >
-                <Text className="text-base font-semibold text-black">Reset</Text>
+                <Text className="text-base font-semibold text-[#6C727F]">Reset</Text>
               </TouchableOpacity>
 
               {/* Apply Button */}

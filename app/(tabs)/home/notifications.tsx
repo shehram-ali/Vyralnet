@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -93,26 +93,26 @@ export default function NotificationsScreen() {
       <View className="flex-row">
         {/* Notification Icon */}
         <View className="mr-3 pt-1">
-          {item.isRead ? <ReadSvg width={24} height={24} /> : <UnreadSvg width={24} height={24} />}
+          {item.isRead ? <ReadSvg width={40} height={40} /> : <UnreadSvg width={40} height={40} />}
         </View>
 
         {/* Content */}
         <View className="flex-1">
           {/* Title */}
-          <Text className="text-base font-bold text-black mb-1">{item.title}</Text>
+          <Text className={`text-sm  ${item.isRead ? 'text-[#000000] font-regular'  : 'text-[#1D1C1C] font-semibold'} mb-1`}>{item.title}</Text>
 
           {/* Message */}
-          <Text className="text-sm text-gray-600 leading-5 mb-2">{item.message}</Text>
+          <Text className="text-xs text-[#1D1C1C] leading-5 mb-2">{item.message}</Text>
 
           {/* Timestamp */}
-          <Text className="text-xs text-gray-400 text-right">{item.timestamp}</Text>
+          <Text className="text-xs text-[#6C727F] text-right">{item.timestamp}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 pt-10 bg-[#F8F8F8]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F8F8]" edges={['top']} style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
       {/* Header */}
       <View className="flex-row items-center px-5 py-4 bg-[#F8F8F8]">
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>

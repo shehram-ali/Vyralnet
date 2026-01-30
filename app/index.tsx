@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Image, Animated, Dimensions } from 'react-native';
+import { View, Image, Animated, Dimensions, StatusBar } from 'react-native';
 import { ROUTES } from '../src/constants';
 import { SplashLogoSvg, SplashBigLogo } from '../assets/images';
+import { useAuth } from '../src/hooks/useAuth';
 
 const { width, height } = Dimensions.get('window');
 
 export default function SplashScreen() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Animation values
   const firstLogoY = useRef(new Animated.Value(-height)).current;
@@ -15,6 +17,9 @@ export default function SplashScreen() {
   const secondLogoX = useRef(new Animated.Value(width)).current;
 
   useEffect(() => {
+    // Wait for auth to load
+    if (isLoading) return;
+
     // Sequence of animations
     const startAnimations = async () => {
       // Step 1: First logo comes from top to center
@@ -52,15 +57,20 @@ export default function SplashScreen() {
       // Wait at center
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Navigate to onboarding screen
-      router.replace(ROUTES.TABS.HOME);
+      // Navigate based on authentication status
+      if (isAuthenticated) {
+        router.replace(ROUTES.ONBOARDING.INDEX);
+      } else {
+        router.replace(ROUTES.AUTH.LOGIN);
+      }
     };
 
     startAnimations();
-  }, []);
+  }, [isLoading, isAuthenticated]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" translucent={false} />
       {/* First Logo - Circular Icon */}
       <Animated.View
         style={{

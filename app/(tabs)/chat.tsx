@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
+  Image,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../src/hooks/useAuth';
-import { Frame1984077131Svg, EmptyChatSvg } from '../../assets/images';
+import { SearchBar } from '../../src/components/common';
+import { Frame1984077131Svg, EmptyChatSvg, Person1, Person2, Person3 } from '../../assets/images';
 
 interface ChatItem {
   id: string;
@@ -19,6 +21,7 @@ interface ChatItem {
   timeAgo: string;
   avatar?: any;
   unread?: boolean;
+  image?:any;
 }
 
 interface EmailItem {
@@ -28,6 +31,7 @@ interface EmailItem {
   subject: string;
   preview: string;
   date: string;
+  isRead?: boolean;
 }
 
 const mockChats: ChatItem[] = [
@@ -36,42 +40,56 @@ const mockChats: ChatItem[] = [
     name: 'Eten Hunt',
     lastMessage: "Thank you very much. I'm glad ...",
     timeAgo: '4 m Ago',
+    image:Person1,
+    unread: true,
   },
   {
     id: '2',
     name: 'Jakob Saris',
     lastMessage: 'You : Sure! let me tell you about w...',
     timeAgo: '4 m Ago',
+    image:Person2,
+    unread: false,
   },
   {
     id: '3',
     name: 'Jeremy Zucker',
     lastMessage: 'You : Sure! let me teach you about ...',
     timeAgo: '4 m Ago',
+    image:Person3,
+    unread: true,
   },
   {
     id: '4',
     name: 'Nadia Lauren',
     lastMessage: 'Is there anything I can help? Just ...',
     timeAgo: '5 m Ago',
+    image:Person1,
+    unread: false,
   },
   {
     id: '5',
     name: 'Jeremy Zucker',
     lastMessage: 'You : Sure! let me teach you about ...',
     timeAgo: '4 m Ago',
+    image:Person2,
+    unread: false,
   },
   {
     id: '6',
     name: 'Jeremy Zucker',
     lastMessage: 'You : Sure! let me teach you about ...',
     timeAgo: '4 m Ago',
+    image:Person3,
+    unread: true,
   },
   {
     id: '7',
     name: 'Jeremy Zucker',
     lastMessage: 'You : Sure! let me teach you about ...',
     timeAgo: '4 m Ago',
+    image:Person1,
+    unread: false,
   },
 ];
 
@@ -83,6 +101,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: 'Today',
+    isRead: false,
   },
   {
     id: '2',
@@ -91,6 +110,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: '05/11/2025',
+    isRead: true,
   },
   {
     id: '3',
@@ -99,6 +119,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: '05/11/2025',
+    isRead: true,
   },
   {
     id: '4',
@@ -107,6 +128,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: '05/11/2025',
+    isRead: true,
   },
   {
     id: '5',
@@ -115,6 +137,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: '05/11/2025',
+    isRead: true,
   },
   {
     id: '6',
@@ -123,6 +146,7 @@ const mockEmails: EmailItem[] = [
     subject: 'Appreciation Letter',
     preview: "Thank you very much. I'm glad ...",
     date: '05/11/2025',
+    isRead: true,
   },
 ];
 
@@ -158,13 +182,13 @@ export default function ChatScreen() {
         activeOpacity={0.7}
         className="px-4 py-3 rounded-full mr-3 flex-row items-center"
         style={{
-          backgroundColor: isActive ? '#5EBD3E' : '#00000014',
+          backgroundColor: isActive ? '#5EBD3E' : '#EDEDED',
         }}
       >
         <Text
-          className="text-sm font-medium"
+          className="text-[13px] font-medium"
           style={{
-            color: isActive ? '#FFFFFF' : '#999797',
+            color: isActive ? '#FFFFFF' : '#6C727F',
           }}
         >
           {label}
@@ -173,7 +197,7 @@ export default function ChatScreen() {
           <View
             className="ml-2 rounded-full items-center justify-center"
             style={{
-              backgroundColor: isActive ? '#FFFFFF' : '#E53E3E',
+              backgroundColor: isActive ? '#E53E3E' : '#E53E3E',
               minWidth: 20,
               height: 20,
               paddingHorizontal: 6,
@@ -182,7 +206,7 @@ export default function ChatScreen() {
             <Text
               className="text-xs font-semibold"
               style={{
-                color: isActive ? '#5EBD3E' : '#FFFFFF',
+                color: isActive ? '#FFFFFF' : '#FFFFFF',
               }}
             >
               {badgeCount}
@@ -194,11 +218,13 @@ export default function ChatScreen() {
   };
 
   const renderChatItem = ({ item }: { item: ChatItem }) => {
+    const isUnread = item.unread;
+
     return (
       <TouchableOpacity
         onPress={() => handleChatPress(item)}
         activeOpacity={0.7}
-        className="flex-row items-center px-2 py-3 bg-white mx-5 mb-3 rounded-2xl"
+        className="flex-row items-center px-3 py-3 bg-white mx-5 mb-3 rounded-2xl"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
@@ -209,16 +235,19 @@ export default function ChatScreen() {
       >
         {/* Avatar */}
         <View style={{ width: 52, height: 52, marginRight: 12 }}>
-          <Frame1984077131Svg width={52} height={52} />
+          <Image source={item.image} style={{ width: 52, height: 52, borderRadius: 26 }} />
         </View>
 
         {/* Chat Info */}
         <View className="flex-1">
           <View className="flex-row items-center justify-between mb-1">
-            <Text className="text-base font-semibold text-black">{item.name}</Text>
-            <Text className="text-xs text-[#999999]">{item.timeAgo}</Text>
+            <Text className="text-sm font-semibold text-[#000929]">{item.name}</Text>
+            <Text className="text-xs font-normal text-[#76767CCC]">{item.timeAgo}</Text>
           </View>
-          <Text className="text-sm text-[#666666]" numberOfLines={1}>
+          <Text
+            className={`text-xs  ${isUnread ? 'text-[#000000] font-semibold' : 'text-[#76767CCC] font-medium'}`}
+            numberOfLines={1}
+          >
             {item.lastMessage}
           </Text>
         </View>
@@ -237,6 +266,8 @@ export default function ChatScreen() {
   };
 
   const renderEmailItem = ({ item }: { item: EmailItem }) => {
+    const isUnread = !item.isRead;
+
     return (
       <TouchableOpacity
         onPress={() => handleEmailPress(item)}
@@ -254,26 +285,34 @@ export default function ChatScreen() {
         <View
           className="items-center justify-center mr-4"
           style={{
-            width: 60,
-            height: 60,
+            width: 52,
+            height: 52,
             borderRadius: 30,
-            backgroundColor: '#D1D5DB',
+            backgroundColor: '#D9D9D9',
           }}
         >
-          <Text className="text-xl font-semibold text-[#6B7280]">{item.senderInitials}</Text>
+          <Text className={`text-xl font-medium  ${isUnread ? 'font-medium text-[#1D1C1C]' : 'font-medium text-[#6C727F]'}`}>{item.senderInitials}</Text>
         </View>
 
         {/* Email Info */}
         <View className="flex-1">
           <View className="flex-row items-center justify-between mb-1">
-            <Text className="text-base font-semibold text-black">{item.senderName}</Text>
+            <Text
+              className={`text-base font-medium text-'[#1D1C1C]'  `}
+            >
+              {item.senderName}
+            </Text>
             <View className="flex-row items-center">
-              <Text className="text-sm text-[#999999] mr-1">{item.date}</Text>
-              <MaterialCommunityIcons name="chevron-right" size={20} color="#999999" />
+              <Text className={`text-xs ${isUnread ? 'font-normal text-[#1D1C1C]' : 'font-medium text-[#6C727F]'} mr-1`}>{item.date}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={`${isUnread ? '#1D1C1C' : '#6C727F'}`} />
             </View>
           </View>
-          <Text className="text-base font-medium text-black mb-1">{item.subject}</Text>
-          <Text className="text-sm text-[#666666]" numberOfLines={1}>
+          <Text
+            className={`text-base mb-1 ${isUnread ? 'font-medium text-[#1D1C1C]' : 'font-medium text-[#6C727F]'}`}
+          >
+            {item.subject}
+          </Text>
+          <Text className="text-xs font-medium text-[#6C727F]" numberOfLines={1}>
             {item.preview}
           </Text>
         </View>
@@ -282,35 +321,34 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 pt-10 bg-[#F8F8FB]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']} style={{ paddingTop: Platform.OS === 'ios' ? 0 : 20 }}>
       {/* Header */}
-      <View className="px-5 pt-6 pb-4 bg-[#F8F8FB]">
-        <Text className="text-3xl font-bold text-black">
+      <View className="px-5 pt-6 pb-6 bg-[#F8F8FB]">
+        <Text className="text-2xl font-bold text-black">
           {isBrand ? (activeTab === 'messages' ? 'Chat' : 'Email') : 'Chat'}
         </Text>
       </View>
 
       {/* Tabs - Only show for brands */}
       {isBrand && (
-        <View className="flex-row px-5 pb-4 bg-[#F8F8FB]">
+        <View className="flex-row px-5 pb-10 bg-[#F8F8FB]">
           {renderTab('messages', 'Messages')}
           {renderTab('email', 'Email', 3)}
         </View>
       )}
+{activeTab === 'messages' && (
+  <>
+    {/* Search Bar */}
+    <View className="px-5 pb-4 bg-[#F8F8FB]">
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        containerStyle={{ marginBottom: 0 }}
+      />
+    </View>
+  </>
+)}
 
-      {/* Search Bar */}
-      <View className="px-5 pb-4 bg-[#F8F8FB]">
-        <View className="flex-row items-center bg-white rounded-3xl px-4 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Search"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-      </View>
 
       {/* Content */}
       {(!isBrand || activeTab === 'messages') ? (

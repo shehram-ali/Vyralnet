@@ -42,6 +42,7 @@ const getTabIcon = (tabName: keyof typeof tabIcons, focused: boolean) => {
         justifyContent: 'center',
         width: '100%',
         position: 'relative',
+      
       }}
     >
       {/* Top green indicator line for active tab - positioned at border */}
@@ -71,7 +72,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 0,
-          paddingBottom: 10,
+          // paddingBottom: 10,
           paddingTop: 12,
           height: 70,
           borderTopRightRadius: 24,
@@ -81,6 +82,7 @@ export default function TabsLayout() {
           shadowOpacity: 0.1,
           shadowRadius: 8,
           elevation: 10,
+          minHeight:100
         },
         tabBarLabelStyle: {
           fontSize: 12,

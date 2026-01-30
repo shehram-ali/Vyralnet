@@ -2,17 +2,16 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from '@expo/vector-icons/Feather';
 import { useAuth } from '../../src/hooks/useAuth';
 import InfluencerJobCard from '../../src/components/common/InfluencerJobCard';
 import ReportCard from '../../src/components/common/ReportCard';
+import { SearchBar, Header } from '../../src/components/common';
 import ReportFilterBottomSheet, {
   ReportFilterState,
 } from '../../src/components/reports/ReportFilterBottomSheet';
@@ -361,20 +360,14 @@ export default function ReportsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between pt-10 px-5 py-4 bg-[#F8F8FB]">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-black ml-4">Reports</Text>
-        </View>
-      
-          <TouchableOpacity onPress={handleFilter} className='w-6 h-6' activeOpacity={0.7}>
-            <Feather name="filter" size={18} color="black" />
-          </TouchableOpacity>
-    
-      </View>
+      <Header
+        title="Reports"
+        titleClassName="text-lg font-bold text-black"
+        backIconSize={28}
+        rightIcons={[
+          { type: 'filter', onPress: handleFilter, size: 18 }
+        ]}
+      />
 
       {/* Tabs */}
       <View className="flex-row px-5 py-3 bg-[#F8F8FB]">
@@ -384,16 +377,12 @@ export default function ReportsScreen() {
 
       {/* Search Bar */}
       <View className="px-5 py-3 bg-[#F8F8F8]">
-        <View className="flex-row items-center bg-white rounded-2xl px-3 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder={searchPlaceholder}
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder={searchPlaceholder}
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Reports List */}

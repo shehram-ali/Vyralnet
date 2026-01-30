@@ -5,12 +5,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Frame1984077131Svg, GreenCrown, HourglassGreen, VSContainer } from '../../assets/images';
+import { Frame1984077131Svg, GreenCrown, HourglassGreen, Person1, VSContainer } from '../../assets/images';
 import { PickerBottomSheet } from '../../src/components/common';
 import { useAuth } from '../../src/hooks/useAuth';
 
@@ -204,12 +205,23 @@ export default function LeaderboardScreen() {
     });
   };
 
+  const getRankBackgroundColor = (rank: number): string => {
+    const colors: { [key: number]: string } = {
+      1: '#E9D7F7', // Light purple
+      2: '#F5EED9', // Light beige
+      3: '#FACDE5', // Light pink
+      4: '#C9F0F5', // Light cyan
+      5: '#D4F4DD', // Light green
+    };
+    return colors[rank] || '#F8F8F8'; // Default gray for rank 6+
+  };
+
   const renderLeaderboardItem = ({ item }: { item: LeaderboardEntry }) => {
     return (
       <TouchableOpacity
         onPress={() => handleUserPress(item)}
         activeOpacity={0.7}
-        className="flex-row items-center px-5 py-4 mb-2 mx-5 bg-white rounded-2xl"
+        className="flex-row items-center px-5 py-4 mb-3 mx-5 bg-white rounded-xl"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
@@ -225,7 +237,7 @@ export default function LeaderboardScreen() {
             width: 32,
             height: 32,
             borderRadius: 16,
-            backgroundColor: '#F8F8F8',
+            backgroundColor: getRankBackgroundColor(item.rank),
           }}
         >
           <Text className="text-sm font-semibold text-black">{item.rank}</Text>
@@ -233,11 +245,18 @@ export default function LeaderboardScreen() {
 
         {/* Avatar and Info */}
         <View style={{ width: 40, height: 40, marginRight: 12 }}>
-          <Frame1984077131Svg width={40} height={40} />
+          <Image
+            source={Person1}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+            }}
+          />
         </View>
         <View className="flex-1">
-          <Text className="text-base font-semibold text-black">{item.influencerName}</Text>
-          <Text className="text-xs text-[#76767CCC]">{item.influencerUsername}</Text>
+          <Text className="text-sm font-medium text-#1D1C1C">{item.influencerName}</Text>
+          <Text className="text-sm font-regular text-[#6C727F]">{item.influencerUsername}</Text>
         </View>
 
         {/* Views with Trend */}
@@ -249,7 +268,7 @@ export default function LeaderboardScreen() {
           />
           <Text
             className="text-sm font-semibold "
-            style={{ color:'#000000' }}
+            style={{ color:'#1D1C1C' }}
           >
             {item.views} Views
           </Text>
@@ -287,7 +306,7 @@ export default function LeaderboardScreen() {
           </View>
 
           {/* Match Content */}
-          <View className="flex-row pt-10 pb-8 items-start justify-between">
+          <View className="flex-row pb-8 items-start justify-between" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
             {/* Player 1 */}
             <View className="items-center flex-1">
               <View className="relative mb-3">
@@ -381,11 +400,11 @@ export default function LeaderboardScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-5 py-4 pt-10 bg-[#F8F8FB]">
+      <View className="flex-row items-center px-5 py-4 bg-[#F8F8FB]" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
           <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>
-        <Text className="text-md font-semibold text-black ml-4">Leaderboard</Text>
+        <Text className="text-sm font-semibold text-black ml-4">Leaderboard</Text>
       </View>
 
       <ScrollView
@@ -397,14 +416,14 @@ export default function LeaderboardScreen() {
         <TouchableOpacity
           onPress={handleChallengePress}
           activeOpacity={0.7}
-          className="mx-5 mt-4 mb-4 bg-white rounded-2xl px-3 py-3"
+          className="mx-5 my-4 bg-white rounded-3xl px-5 py-3"
         >
-          <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between shadow-#00000014 drop-shadow-lg">
             <View className="flex-1">
               <Text className="text-sm text-black mb-1">Challenge</Text>
               <Text className="text-sm text-[#6C727F] font-regular">{selectedChallenge}</Text>
             </View>
-            <MaterialCommunityIcons name="chevron-down" size={24} color="#000" />
+            <MaterialCommunityIcons name="chevron-down" size={20} color="#000" />
           </View>
         </TouchableOpacity>
 
@@ -478,7 +497,7 @@ export default function LeaderboardScreen() {
                 <View className="flex-row justify-between">
                   {/* Participants */}
                   <View
-                    className="flex-1 bg-white rounded-2xl py-4 px-1 items-center mr-2"
+                    className="flex-1 bg-white rounded-2xl py-4 px-3 items-center mr-2"
                     style={{ minHeight: 101 , width:116}}
                   >
                     <MaterialCommunityIcons name="account-group" size={24} color="#000" />
@@ -488,8 +507,8 @@ export default function LeaderboardScreen() {
 
                   {/* Round */}
                   <View
-                    className="flex-1 bg-white rounded-2xl p-4 items-center mx-1"
-                    style={{ minHeight: 90 }}
+                    className="flex-1 bg-white rounded-2xl py-4 px-3 items-center mx-2"
+                     style={{ minHeight: 101 , width:116}}
                   >
                     <MaterialCommunityIcons name="clock-outline" size={24} color="#000" />
                     <Text className="text-xs text-black font-medium mt-2">Round</Text>
@@ -498,12 +517,12 @@ export default function LeaderboardScreen() {
 
                   {/* Time Left */}
                   <View
-                    className="flex-1 bg-white rounded-2xl py-4 items-center ml-2"
-                    style={{ minHeight: 90 }}
+                    className="flex-1 bg-white rounded-2xl py-4 px-3 items-center ml-1"
+                     style={{ minHeight: 101 , width:116}}
                   >
                     <MaterialCommunityIcons name="timer-outline" size={24} color="#000" />
                     <Text className="text-xs text-black font-medium mt-2">Time Left</Text>
-                    <Text className="text-xl font-bold text-black mt-1 ">
+                    <Text className="text-xl font-semibold text-black mt-1 ">
                       {formatTime(timeLeft.hours)}:{formatTime(timeLeft.minutes)}:{formatTime(timeLeft.seconds)}
                     </Text>
                   </View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,7 +23,7 @@ export default function JobDetailsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8F8]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-5 py-4 pt-10 bg-white">
+      <View className="flex-row items-center px-5 py-4 bg-white" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
           <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
         </TouchableOpacity>

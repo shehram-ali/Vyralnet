@@ -10,23 +10,21 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-interface ProfilePictureBottomSheetProps {
+interface ChallengeJoinConfirmationSheetProps {
   visible: boolean;
+  onConfirm: () => void;
   onClose: () => void;
-  onUploadPhoto: () => void;
-  onTakePhoto: () => void;
-  onDeletePhoto: () => void;
+  onAnimationComplete?: () => void;
 }
 
 const { height } = Dimensions.get('window');
 
-export default function ProfilePictureBottomSheet({
+export default function ChallengeJoinConfirmationSheet({
   visible,
+  onConfirm,
   onClose,
-  onUploadPhoto,
-  onTakePhoto,
-  onDeletePhoto,
-}: ProfilePictureBottomSheetProps) {
+  onAnimationComplete,
+}: ChallengeJoinConfirmationSheetProps) {
   const slideAnim = useRef(new Animated.Value(height)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -57,9 +55,14 @@ export default function ProfilePictureBottomSheet({
           duration: 250,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(() => {
+        // Call callback after closing animation completes
+        if (onAnimationComplete) {
+          onAnimationComplete();
+        }
+      });
     }
-  }, [visible]);
+  }, [visible, onAnimationComplete]);
 
   return (
     <Modal
@@ -86,14 +89,14 @@ export default function ProfilePictureBottomSheet({
                 backgroundColor: '#FFFFFF',
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
-                paddingTop: 20,
+                paddingTop: 12,
                 paddingBottom: 40,
                 paddingHorizontal: 20,
                 transform: [{ translateY: slideAnim }],
               }}
             >
               {/* Handle Bar */}
-              <View className="items-center mb-6">
+              <View className="items-center mb-4">
                 <View
                   style={{
                     width: 48,
@@ -104,72 +107,62 @@ export default function ProfilePictureBottomSheet({
                 />
               </View>
 
-              {/* Header */}
-              <View className="flex-row items-center justify-between mb-6">
-                <Text className="text-lg font-semibold text-black flex-1 text-center">
-                  Change Profile Picture
-                </Text>
-                <TouchableOpacity
-                  onPress={onClose}
-                  activeOpacity={0.7}
-                  className="absolute right-0"
+              {/* Close Button */}
+              <TouchableOpacity
+                onPress={onClose}
+                activeOpacity={0.7}
+                className="absolute top-5 right-5 z-10"
+              >
+                <MaterialCommunityIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+
+              {/* Title */}
+              <Text className="text-xl font-bold text-black text-center mb-6 mt-4">
+                Challenge Confirmation
+              </Text>
+
+              {/* Alert Icon - Green Warning */}
+              <View className="items-center justify-center mb-6">
+                {/* Outer Layer - Light Green */}
+                <View
+                  className="items-center justify-center rounded-full"
+                  style={{
+                    width: 96,
+                    height: 96,
+                    backgroundColor: '#F2FFED',
+                  }}
                 >
-                  <MaterialCommunityIcons name="close" size={24} color="#000" />
-                </TouchableOpacity>
+                  {/* Inner Circle - Green */}
+                 
+                    <MaterialCommunityIcons
+                      name="alert-outline"
+                      size={48}
+                      color="#5EBD3E"
+                    />
+                  </View>
+             
               </View>
 
-              {/* Upload Photo Option */}
-              <TouchableOpacity
-                onPress={() => {
-                  onUploadPhoto();
-                  onClose();
-                }}
-                activeOpacity={0.7}
-                className="flex-row items-center py-4 border-b border-gray-200"
-              >
-                <MaterialCommunityIcons
-                  name="upload"
-                  size={24}
-                  color="#000"
-                  style={{ marginRight: 16 }}
-                />
-                <Text className="text-base text-black">Upload Photo</Text>
-              </TouchableOpacity>
+              {/* Main Message */}
+              <Text className="text-xl font-bold text-black text-center mb-3">
+                Ready to join the Challenge?
+              </Text>
 
-              {/* Take Photo Option */}
-              <TouchableOpacity
-                onPress={() => {
-                  onTakePhoto();
-                  onClose();
-                }}
-                activeOpacity={0.7}
-                className="flex-row items-center py-4 border-b border-gray-200"
-              >
-                <MaterialCommunityIcons
-                  name="camera"
-                  size={24}
-                  color="#000"
-                  style={{ marginRight: 16 }}
-                />
-                <Text className="text-base text-black">Take Photo</Text>
-              </TouchableOpacity>
+              {/* Warning Message */}
+              <Text className="text-base text-[#6C727F] text-center mb-8 px-4">
+                Once you join the challenge, you won't be able to leave or withdraw.
+              </Text>
 
-              {/* Delete Photo Option */}
+              {/* Confirm Button */}
               <TouchableOpacity
-                onPress={() => {
-                  onDeletePhoto();
-                  onClose();
-                }}
-                activeOpacity={0.7}
-                className="flex-row items-center py-4"
+                onPress={onConfirm}
+                activeOpacity={0.8}
+                className="rounded-2xl py-4 items-center"
+                style={{ backgroundColor: '#5EBD3E' }}
               >
-                <MaterialCommunityIcons
-                  name="close-circle-outline"
-                  size={24}
-                  color="#000"
-                  style={{ marginRight: 16 }}
-                />
-                <Text className="text-base text-black">Delete Photo</Text>
+                <Text className="text-base font-medium text-white">
+                  Yes, Join
+                </Text>
               </TouchableOpacity>
             </Animated.View>
           </TouchableWithoutFeedback>

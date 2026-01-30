@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Switch, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, Switch, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Header } from '../../src/components/common';
 
 interface NotificationSetting {
   id: string;
@@ -11,8 +10,6 @@ interface NotificationSetting {
 }
 
 export default function NotificationsScreen() {
-  const router = useRouter();
-
   const [pushNotifications, setPushNotifications] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [inAppNotifications, setInAppNotifications] = useState(true);
@@ -40,13 +37,11 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center px-5 py-4 pt-10 bg-[#F8F8FB]">
-        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-          <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text className="text-md font-medium text-black ml-2">Notifications</Text>
-      </View>
+      <Header
+        title="Notifications"
+        titleClassName="text-md font-medium text-black"
+        backIconSize={24}
+      />
 
       <ScrollView
         className="flex-1"

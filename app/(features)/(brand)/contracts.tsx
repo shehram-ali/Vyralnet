@@ -2,15 +2,14 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from '@expo/vector-icons/Feather';
 import InfluencerJobCard from '../../../src/components/common/InfluencerJobCard';
+import { SearchBar, Header } from '../../../src/components/common';
 import ContractFilterBottomSheet, {
   ContractFilterState,
 } from '../../../src/components/contracts/ContractFilterBottomSheet';
@@ -201,18 +200,14 @@ export default function ContractsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between pt-10 px-5 py-4 bg-[#F8F8FB]">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-black ml-4">Your Contracts</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowFilterSheet(true)} activeOpacity={0.7}>
-          <Feather name="filter" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Your Contracts"
+        titleClassName="text-lg font-bold text-black"
+        backIconSize={28}
+        rightIcons={[
+          { type: 'filter', onPress: () => setShowFilterSheet(true), size: 24 }
+        ]}
+      />
 
       {/* Tabs */}
       <View className="flex-row px-5 py-3 bg-[#F8F8FB]">
@@ -222,16 +217,11 @@ export default function ContractsScreen() {
 
       {/* Search Bar */}
       <View className="px-5 py-3 bg-[#F8F8F8]">
-        <View className="flex-row items-center bg-white rounded-2xl px-3 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Search"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Contracts List */}

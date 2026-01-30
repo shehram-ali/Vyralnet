@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,20 +36,16 @@ export default function SubmitContentScreen() {
 
   const handleViewFeedback = () => {
     setShowSuccessSheet(false);
-    // Navigate to content details screen with no feedback
-    router.push({
-      pathname: '/(features)/(brand)/content-details',
-      params: {
-        id: params.id,
-        hasFeedback: 'false',
-      },
-    } as any);
+    // Navigate back to joined challenge details screen with submitted flag
+    setTimeout(() => {
+      router.replace(`/(features)/(influencer)/joined-challenge-details?id=${params.challengeId}&submitted=true` as any);
+    }, 300);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center pt-10 px-5 py-4 bg-[#F8F8FB]">
+      <View className="flex-row items-center px-5 py-4 bg-[#F8F8FB]" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 20 }}>
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
           <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>
@@ -159,8 +156,8 @@ export default function SubmitContentScreen() {
       <SuccessBottomSheet
         visible={showSuccessSheet}
         title="Congratulations!"
-        message="Your content is submitted! The client will review it within 1-3 days, and Once client give you feedback your amount will be released. Thank You"
-        buttonText="View Feedback"
+        message="Your content is submitted! The client will review it within 1-3 days, and the best performing video earns the prize. Thank You"
+        buttonText="View Challenge Details"
         onButtonPress={handleViewFeedback}
         onClose={() => setShowSuccessSheet(false)}
       />

@@ -5,7 +5,10 @@
       "Bash(npx tsc:*)",
       "mcp__ide__getDiagnostics",
       "Bash(tree:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx expo start:*)",
+      "Bash(npx expo install:*)"
     ]
   }
 }

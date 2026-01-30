@@ -18,9 +18,9 @@ export default function PackagesTab({ packages }: PackagesTabProps) {
   }
 
   return (
-    <View className="bg-white px-5 pt-4 pb-6">
-      <Text className="text-lg font-bold text-black mb-2">Check Deals</Text>
-      <Text className="text-sm text-gray-500 mb-4">
+    <View className="px-5 pt-4 pb-6">
+      <Text className="text-base font-semibold text-black mb-2">Check Deals</Text>
+      <Text className="text-xs text-[#6C727F] mb-4">
         This specific deliverables available from this Seller. Choose one
       </Text>
 
@@ -31,7 +31,7 @@ export default function PackagesTab({ packages }: PackagesTabProps) {
           <View
             key={item.id}
             className="mb-4 rounded-2xl overflow-hidden"
-            style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#E5E5E5' }}
+            style={{ backgroundColor: 'white', shadowColor:'#00000014', shadowOffset: { width: 1, height: 2 }, shadowOpacity: 0.15, }}
           >
             {/* Package Header with Color */}
             <View
@@ -65,26 +65,26 @@ export default function PackagesTab({ packages }: PackagesTabProps) {
             </View>
 
             {/* Package Content */}
-            <View className="px-4 py-3">
+            <View className="px-4 py-3 ">
               {/* Delivery & Revisions */}
-              <View className="flex-row items-center mb-4">
+              <View className="flex-row items-center mb-4 border-b-[1px] pb-2 border-[#E5E5E5]">
                 <View className="flex-row items-center mr-4">
                   <MaterialCommunityIcons
                     name="calendar-blank"
-                    size={16}
-                    color="#666"
+                    size={14}
+                    color="#4A4A4A"
                   />
-                  <Text className="text-xs text-gray-600 ml-1">
+                  <Text className="text-sm text-[#4A4A4A] ml-1">
                     {item.deliveryDays} Days Delivery
                   </Text>
                 </View>
                 <View className="flex-row items-center">
                   <MaterialCommunityIcons
                     name="refresh"
-                    size={16}
-                    color="#666"
+                    size={14}
+                    color="#4A4A4A"
                   />
-                  <Text className="text-xs text-gray-600 ml-1">
+                  <Text className="text-sm text-[#4A4A4A] ml-1">
                     {item.revisions} Revisions
                   </Text>
                 </View>
@@ -92,31 +92,32 @@ export default function PackagesTab({ packages }: PackagesTabProps) {
 
               {/* Features */}
               <View className="mb-4">
-                <Text className="text-base font-bold text-black mb-2">
+                <Text className="text-sm font-semibold text-black mb-2">
                   Features
                 </Text>
                 <View className="flex-row flex-wrap">
                   {item.features.map((feature, idx) => (
                     <View
                       key={idx}
-                      className="flex-row items-center mb-2"
+                      className="flex-row items-center "
                       style={{ width: '50%' }}
                     >
                       <MaterialCommunityIcons
                         name="check"
-                        size={16}
-                        color="#5EBD3E"
+                        size={14}
+                        color="#006400"
                       />
-                      <Text className="text-sm text-gray-700 ml-2 flex-1">
+                      <Text className="text-xs text-[#4A4A4A] ml-2 flex-1">
                         {feature}
                       </Text>
                     </View>
                   ))}
                 </View>
               </View>
+              <View className='h-[2px] bg-[#E6E6E6] mb-2' />
 
               {/* Description */}
-              <Text className="text-sm text-gray-600 leading-5">
+              <Text className="text-sm text-[#6C727F] leading-5">
                 {item.description}
               </Text>
             </View>

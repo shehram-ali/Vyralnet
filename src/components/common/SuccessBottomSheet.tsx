@@ -7,9 +7,9 @@ import {
   Animated,
   Dimensions,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import LottieView from 'lottie-react-native';
-import { GreenTickAnimation } from '../../../assets/animations';
 
 interface SuccessBottomSheetProps {
   visible: boolean;
@@ -18,6 +18,7 @@ interface SuccessBottomSheetProps {
   buttonText: string;
   onButtonPress: () => void;
   onClose: () => void;
+  onAnimationComplete?: () => void;
 }
 
 const { height } = Dimensions.get('window');
@@ -29,13 +30,16 @@ export default function SuccessBottomSheet({
   buttonText,
   onButtonPress,
   onClose,
+  onAnimationComplete,
 }: SuccessBottomSheetProps) {
   const slideAnim = useRef(new Animated.Value(height)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lottieRef = useRef<LottieView>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (visible) {
+      // OPEN ANIMATION
       Animated.parallel([
         Animated.spring(slideAnim, {
           toValue: 0,
@@ -45,16 +49,19 @@ export default function SuccessBottomSheet({
         }),
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: 400,
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Play Lottie animation after sheet appears
-        setTimeout(() => {
-          lottieRef.current?.play();
-        }, 100);
+        playLottie();
       });
+
+      // REPLAY EVERY 3 SECONDS
+      intervalRef.current = setInterval(() => {
+        playLottie();
+      }, 3000);
     } else {
+      // CLOSE ANIMATION
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: height,
@@ -66,9 +73,26 @@ export default function SuccessBottomSheet({
           duration: 250,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(() => {
+        onAnimationComplete?.();
+      });
     }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [visible]);
+
+  const playLottie = () => {
+    if (!lottieRef.current) return;
+
+    // 🔥 THIS IS THE KEY FIX
+    lottieRef.current.reset();
+    lottieRef.current.play();
+  };
 
   return (
     <Modal
@@ -81,7 +105,7 @@ export default function SuccessBottomSheet({
         <Animated.View
           style={{
             flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
             opacity: fadeAnim,
           }}
         >
@@ -92,7 +116,7 @@ export default function SuccessBottomSheet({
                 bottom: 0,
                 left: 0,
                 right: 0,
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#FFF',
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 paddingTop: 12,
@@ -101,7 +125,7 @@ export default function SuccessBottomSheet({
                 transform: [{ translateY: slideAnim }],
               }}
             >
-              {/* Handle Bar */}
+              {/* Handle */}
               <View className="items-center mb-8">
                 <View
                   style={{
@@ -113,16 +137,17 @@ export default function SuccessBottomSheet({
                 />
               </View>
 
-              {/* Success Animation */}
+              {/* Animation */}
               <View className="items-center mb-6">
                 <LottieView
                   ref={lottieRef}
-                  source={GreenTickAnimation}
+                  source={require('../../../assets/animations/green-tick.json')}
+                  autoPlay={false}
                   loop={false}
-                  style={{
-                    width: 200,
-                    height: 200,
-                  }}
+                  speed={1.0} // Slower animation pace
+                  resizeMode="cover"
+                  hardwareAccelerationAndroid={true}
+                  style={{ width: 180, height: 180 }}
                 />
               </View>
 

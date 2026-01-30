@@ -2,15 +2,14 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from '@expo/vector-icons/Feather';
 import { Frame1984077131Svg, InstagramSvg } from '../../../assets/images';
+import { SearchBar, Header } from '../../../src/components/common';
 import NetworkFilterBottomSheet, {
   NetworkFilterState,
 } from '../../../src/components/network/NetworkFilterBottomSheet';
@@ -323,7 +322,7 @@ export default function MyNetworkScreen() {
           </View>
           {isProspects ? (
             <View
-              className="w-5 h-5 rounded border-2 items-center justify-center"
+              className="w-5 h-5 rounded border-[1px] items-center justify-center"
               style={{
                 borderColor: isSelected ? '#5EBD3E' : '#D1D5DB',
                 backgroundColor: isSelected ? '#5EBD3E' : 'transparent',
@@ -407,18 +406,14 @@ export default function MyNetworkScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between pt-10 px-5 py-4 bg-[#F8F8FB]">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-black ml-4">My Network</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowFilterSheet(true)} activeOpacity={0.7}>
-          <Feather name="filter" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="My Network"
+        titleClassName="text-lg font-bold text-black"
+        backIconSize={28}
+        rightIcons={[
+          { type: 'filter', onPress: () => setShowFilterSheet(true), size: 24 }
+        ]}
+      />
 
       {/* Tabs */}
       <View className="flex-row px-5 py-3 bg-[#F8F8FB]">
@@ -429,16 +424,12 @@ export default function MyNetworkScreen() {
 
       {/* Search Bar */}
       <View className="px-5 py-3 bg-[#F8F8F8]">
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Search by Name"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by Name"
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Select All - Only visible in Prospects tab */}
@@ -448,7 +439,7 @@ export default function MyNetworkScreen() {
           <TouchableOpacity
             onPress={toggleSelectAll}
             activeOpacity={0.7}
-            className="w-4 h-4 rounded border-2 items-center justify-center"
+            className="w-4 h-4 rounded border-[1px] items-center justify-center"
             style={{
               borderColor: isAllSelected ? '#5EBD3E' : '#D1D5DB',
               backgroundColor: isAllSelected ? '#5EBD3E' : 'transparent',
@@ -574,6 +565,7 @@ export default function MyNetworkScreen() {
         }}
         recipientEmail={emailRecipient.email}
         recipientName={emailRecipient.name}
+        isReply={false}
       />
     </SafeAreaView>
   );

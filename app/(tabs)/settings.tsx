@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgProps } from 'react-native-svg';
+import * as ImagePicker from 'expo-image-picker';
 import {
   EditPen,
   SPersonSvg,
@@ -37,14 +38,88 @@ export default function SettingsScreen() {
     router.replace(ROUTES.AUTH.LOGIN);
   };
 
-  const handleUploadPhoto = () => {
-    // TODO: Implement photo upload functionality
-    console.log('Upload photo');
+  const handleUploadPhoto = async () => {
+    try {
+      // Request permission
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert('Permission Required', 'Permission to access camera roll is required!');
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        // Update user avatar
+        await updateUser({ avatar: result.assets[0].uri });
+        console.log('Photo uploaded successfully');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      Alert.alert('Error', 'Failed to upload photo. Please try again.');
+    }
   };
 
-  const handleDeletePhoto = () => {
-    // TODO: Implement photo delete functionality
-    console.log('Delete photo');
+  const handleTakePhoto = async () => {
+    try {
+      // Request permission
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert('Permission Required', 'Permission to access camera is required!');
+        return;
+      }
+
+      // Launch camera
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        // Update user avatar
+        await updateUser({ avatar: result.assets[0].uri });
+        console.log('Photo taken successfully');
+      }
+    } catch (error) {
+      console.error('Error taking photo:', error);
+      Alert.alert('Error', 'Failed to take photo. Please try again.');
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    try {
+      Alert.alert(
+        'Delete Photo',
+        'Are you sure you want to delete your profile photo?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              // Reset to default avatar
+              await updateUser({ avatar: '' });
+              console.log('Photo deleted successfully');
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      Alert.alert('Error', 'Failed to delete photo. Please try again.');
+    }
   };
 
   const handleSwitchUserType = async () => {
@@ -162,7 +237,7 @@ export default function SettingsScreen() {
         key={item.id}
         onPress={item.onPress}
         activeOpacity={0.7}
-        className="flex-row items-center justify-between px-5 py-5 bg-white mx-5 mb-3 rounded-2xl"
+        className="flex-row items-center justify-between px-4 py-4 bg-white mx-5 mb-3 rounded-2xl"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
@@ -172,7 +247,7 @@ export default function SettingsScreen() {
         }}
       >
         <View className="flex-row items-center flex-1">
-          <IconComponent width={22} height={22} />
+          <IconComponent width={24} height={24} />
           <Text
             className="text-base font-normal ml-4"
             style={{ color: item.color || '#000000' }}
@@ -182,8 +257,8 @@ export default function SettingsScreen() {
         </View>
         <MaterialCommunityIcons
           name="chevron-right"
-          size={24}
-          color="#9CA3AF"
+          size={20}
+          color="#000000"
         />
       </TouchableOpacity>
     );
@@ -192,8 +267,8 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="px-5 pt-4 pb-6 bg-[#F8F8FB]">
-        <Text className="text-2xl font-bold text-black">Settings</Text>
+      <View className="px-5 pt-4 pb-6 bg-[#F8F8FB] " style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
+        <Text className="text-2xl font-[800px] text-[#1D1C1C]">Settings</Text>
       </View>
 
       <ScrollView
@@ -212,35 +287,44 @@ export default function SettingsScreen() {
               <Image
                 source={{ uri: user?.avatar || 'https://i.pravatar.cc/150?img=8' }}
                 style={{
-                  width: 120,
-                  height: 120,
-                  borderRadius: 60,
+                  width: 104,
+                  height: 104,
+                  borderRadius: 81,
                 }}
               />
               {/* Edit/Verified Badge */}
               <View
-                className="absolute bottom-0 right-0 items-center justify-center"
+                className="absolute bottom-0 right-1 items-center justify-center"
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 6,
                   backgroundColor: '#5EBD3E',
-                  borderWidth: 3,
-                  borderColor: '#F8F8FB',
+                  // borderWidth: 3,
+                  // borderColor: '#F8F8FB',
                 }}
               >
-                <EditPen  />
+                <EditPen width={12} height={12} />
               </View>
             </View>
           </TouchableOpacity>
 
           {/* Name and Email/Location */}
-          <Text className="text-xl font-semibold text-black mb-1">
-            {isBrand ? (user?.brandName || 'Brand Name') : (user?.name || 'James Doe')}
+          <Text className="text-xl font-medium text-black mb-1">
+            {isBrand ? ( user?.name || 'Microsoft Inc.') : (user?.name || 'James Doe')}
+          
           </Text>
-          <Text className="text-sm text-gray-600">
-            {isBrand ? (user?.location || 'San Francisco, CA') : (user?.email || 'james_doe@email.com')}
+          {/* <Text className="text-xl font-medium text-black mb-1">
+            {isBrand ? ( user?.name || 'Microsoft Inc.') : (user?.name || 'James Doe')}
+          
+          </Text> */}
+        
+          <Text className="text-sm font-normal text-black ">
+            {isBrand ? ( 'San Francisco, CA') : (user?.email || 'james_doe@email.com')}
           </Text>
+          {/* <Text className="text-sm font-normal text-black ">
+            {isBrand ? ( 'San Francisco, CA') : (user?.email || 'james_doe@email.com')}
+          </Text> */}
         </View>
 
         {/* Development Testing Section */}
@@ -311,6 +395,7 @@ export default function SettingsScreen() {
         visible={showProfilePictureSheet}
         onClose={() => setShowProfilePictureSheet(false)}
         onUploadPhoto={handleUploadPhoto}
+        onTakePhoto={handleTakePhoto}
         onDeletePhoto={handleDeletePhoto}
       />
     </SafeAreaView>

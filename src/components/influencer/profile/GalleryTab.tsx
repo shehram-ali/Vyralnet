@@ -10,7 +10,7 @@ interface GalleryTabProps {
 
 export default function GalleryTab({ gallery }: GalleryTabProps) {
   return (
-    <View className="bg-white px-5 pt-4 pb-6">
+    <View className=" px-5 pt-4 pb-6">
       <Text className="text-lg font-bold text-black mb-2">Check Gallery</Text>
       <Text className="text-sm text-gray-500 mb-4">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit.

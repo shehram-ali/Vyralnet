@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,8 +7,8 @@ import { mockInfluencers, Influencer, availableCategories } from '../../../src/d
 import InfluencerCard from '../../../src/components/influencer/InfluencerCard';
 import FilterBottomSheet, { FilterState } from '../../../src/components/influencer/FilterBottomSheet';
 import CategoryPickerBottomSheet from '../../../src/components/influencer/CategoryPickerBottomSheet';
+import { SearchBar, Header } from '../../../src/components/common';
 import { ROUTES } from '../../../src/constants';
-import Feather from '@expo/vector-icons/Feather';
 
 export default function SearchTalentsScreen() {
   const router = useRouter();
@@ -90,18 +90,15 @@ export default function SearchTalentsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8F8]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between pt-10 px-5 py-4 bg-white">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-black ml-4">Search Talents</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowFilterSheet(true)} activeOpacity={0.7}>
-          <Feather name="filter" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Search Talents"
+        titleClassName="text-lg font-bold text-black"
+        backIconSize={28}
+        backgroundColor="#F8F8F8"
+        rightIcons={[
+          { type: 'filter', onPress: () => setShowFilterSheet(true) }
+        ]}
+      />
 
       {/* All Talents Heading */}
       <View className="px-5 pt-5 pb-3 bg-[#F8F8F8]">
@@ -110,16 +107,11 @@ export default function SearchTalentsScreen() {
 
       {/* Search Bar */}
       <View className="px-5 pb-4 bg-[#F8F8F8]">
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={20} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Search"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Influencers List */}

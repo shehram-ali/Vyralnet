@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ROUTES } from '../../../src/constants';
 import { mockInfluencers } from '../../../src/data/mockInfluencers';
+import { Send2Svg } from 'assets/images';
 
 interface Message {
   id: string;
@@ -37,6 +38,7 @@ export default function ChatScreen() {
   const influencerName = passedInfluencerName || influencer?.name || 'Influencer';
   const influencerAvatar = influencer?.avatar;
 
+  const flatListRef = useRef<FlatList>(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -91,6 +93,11 @@ export default function ChatScreen() {
       };
       setMessages([...messages, newMessage]);
       setMessage('');
+
+      // Scroll to bottom after sending message
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     }
   };
 
@@ -123,21 +130,24 @@ export default function ChatScreen() {
                 : influencerAvatar
             }
             style={{
-              width: 32,
-              height: 32,
+              width: 24,
+              height: 24,
               borderRadius: 16,
               marginRight: 8,
             }}
           />
         ) : (
-          <View
+         <Image
+            source={
+              typeof influencerAvatar === 'string'
+                ? { uri: influencerAvatar }
+                : influencerAvatar
+            }
             style={{
-              width: 32,
-              height: 32,
+              width: 24,
+              height: 24,
               borderRadius: 16,
-              backgroundColor: isUser ? '#5EBD3E' : '#E0E0E0',
-              marginLeft: isUser ? 8 : 0,
-              marginRight: isUser ? 0 : 8,
+              marginLeft: 8,
             }}
           />
         )}
@@ -161,7 +171,7 @@ export default function ChatScreen() {
           <View
             style={{
               backgroundColor: isUser ? '#5EBD3E' : '#F0F0F0',
-              borderRadius: 16,
+              borderRadius: 10,
               padding: 12,
             }}
           >
@@ -189,7 +199,7 @@ export default function ChatScreen() {
               <MaterialCommunityIcons
                 name="check"
                 size={14}
-                color="#5EBD3E"
+                color="#3469F9"
                 style={{ marginRight: 4 }}
               />
             )}
@@ -203,10 +213,10 @@ export default function ChatScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between mt-10 px-4 py-3 bg-white">
+      <View className="flex-row items-center justify-between  px-4 py-3 bg-white" style={{paddingTop:Platform.OS === 'ios' ? 0 : 40}}>
         <View className="flex-row items-center flex-1">
           <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
+            <MaterialCommunityIcons name="chevron-left" size={30} color="#000" />
           </TouchableOpacity>
 
           {/* User Info */}
@@ -237,20 +247,20 @@ export default function ChatScreen() {
               />
             )}
             <View>
-              <Text className="text-base font-bold text-black">
+              <Text className="text-base font-bold text-[#000929]">
                 {influencerName}
               </Text>
               <View className="flex-row items-center">
                 <View
                   style={{
-                    width: 8,
-                    height: 8,
+                    width: 6,
+                    height: 6,
                     borderRadius: 4,
                     backgroundColor: '#5EBD3E',
-                    marginRight: 6,
+                    marginRight: 4,
                   }}
                 />
-                <Text className="text-sm text-gray-500">Online</Text>
+                <Text className="text-xs font-medium text-[#BABABA]">Online</Text>
               </View>
             </View>
           </View>
@@ -260,73 +270,94 @@ export default function ChatScreen() {
         <TouchableOpacity
           onPress={handleHireInfluencer}
           activeOpacity={0.8}
-          className="rounded-lg px-4 py-2"
+          className="rounded-lg px-3 py-2 "
           style={{ backgroundColor: '#5EBD3E' }}
         >
-          <Text className="text-sm font-semibold text-white">
+          <Text className="text-sm font-medium text-white">
             Hire Influencer
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Date Separator */}
-      <View className="items-center py-4">
-        <View className="bg-white px-4 py-2 rounded-full">
-          <Text className="text-sm text-gray-600">Today</Text>
-        </View>
-      </View>
-
-      {/* Messages List */}
-      <FlatList
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Message Input */}
       <KeyboardAvoidingView
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={90}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <View
-          className="flex-row items-center px-4 py-3 bg-white"
-          style={{
-            borderTopWidth: 1,
-            borderTopColor: '#E0E0E0',
-          }}
-        >
-          {/* Attachment Button */}
-          <TouchableOpacity activeOpacity={0.7} className="mr-3">
-            <MaterialCommunityIcons name="paperclip" size={24} color="#999" />
-          </TouchableOpacity>
+        {/* Messages Container */}
+        <View className="flex-1 bg-[#F8F8FB]">
+          {/* Date Separator */}
+          <View className="items-center py-4">
+            <View className="bg-[#F8F8FB] px-4 py-2 rounded-full">
+              <Text className="text-sm text-gray-600">Today</Text>
+            </View>
+          </View>
 
-          {/* Text Input */}
-          <TextInput
-            className="flex-1 bg-[#F5F5F5] rounded-full px-4 py-2 text-base"
-            placeholder="Write a message..."
-            placeholderTextColor="#999"
-            value={message}
-            onChangeText={setMessage}
-            multiline
-            maxLength={500}
+          {/* Messages List */}
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           />
+        </View>
 
-          {/* Send Button */}
-          <TouchableOpacity
-            onPress={handleSendMessage}
-            activeOpacity={0.8}
-            className="ml-3 items-center justify-center"
+        {/* Message Input Container */}
+        <View className="bg-white px-4 py-3">
+          <View
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: '#5EBD3E',
+              flexDirection: 'row',
+              alignItems: 'center',
+              // borderWidth: 1,
+              // borderColor: '#D1D5DB',
+              borderRadius: 24,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              backgroundColor: '#FFFFFF',
+              paddingBottom:30,
             }}
           >
-            <MaterialCommunityIcons name="send" size={22} color="#FFF" />
-          </TouchableOpacity>
+            {/* Attachment Button */}
+            <TouchableOpacity activeOpacity={0.7} style={{ marginRight: 8 }}>
+              <MaterialCommunityIcons name="paperclip" size={22} color="#9CA3AF" />
+            </TouchableOpacity>
+
+            {/* Text Input */}
+            <TextInput
+              className="flex-1 text-base"
+              placeholder="Write a message..."
+              placeholderTextColor="#D1D5DB"
+              value={message}
+              onChangeText={setMessage}
+              multiline
+              maxLength={500}
+              style={{
+                maxHeight: 80,
+                paddingVertical: 0,
+                color: '#000',
+              }}
+            />
+
+            {/* Send Button */}
+            <TouchableOpacity
+              onPress={handleSendMessage}
+              activeOpacity={0.8}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                backgroundColor: '#5EBD3E',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: 8,
+              }}
+            >
+              <Send2Svg width={18} height={18} />
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

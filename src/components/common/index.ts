@@ -2,6 +2,8 @@ export { default as Button } from './Button';
 export { default as Input } from './Input';
 export { default as Card } from './Card';
 export { default as LoadingSpinner } from './LoadingSpinner';
+export { default as SearchBar } from './SearchBar';
+export { default as Header } from './Header';
 
 // Reusable Bottom Sheet Components
 export { default as BaseBottomSheet } from './BaseBottomSheet';

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
   Platform,
@@ -13,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   JobCard,
+  SearchBar,
   FilterBottomSheet,
   PickerBottomSheet,
 } from '../../../src/components/common';
@@ -147,7 +147,7 @@ export default function MyJobsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center pt-10 justify-between px-5 py-4">
+      <View className="flex-row items-center justify-between px-5 py-4" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
         <View className="flex-row items-center flex-1">
           <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
             <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
@@ -166,16 +166,11 @@ export default function MyJobsScreen() {
 
       {/* Search Bar */}
       <View className="px-5 mb-4">
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3">
-          <MaterialCommunityIcons name="magnify" size={20} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-sm text-black"
-            placeholder="Search"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Jobs List */}

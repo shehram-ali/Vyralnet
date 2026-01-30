@@ -40,6 +40,8 @@ export { default as EditPen } from './editpen.svg';
 export { default as EditBlack } from './editblack.svg';
 export { default as GreenCrown } from './greencrown.svg';
 export { default as HourglassGreen } from './glasshourgreen.svg';
+export { default as blacktick } from './blacktick.svg';
+
 // Vectors
 export { default as Vector1Svg } from './Vector 1.svg';
 export { default as Vector2Svg } from './Vector 2.svg';
@@ -69,6 +71,10 @@ export const Person3 = require('./person3.png');
 // Badge Icons
 export { default as WizardBadge1Svg } from './Wizardbadge1.svg';
 export { default as WizardBadge2Svg } from './wizardbadge2.svg';
+export { default as NoobieBadgeSvg } from './Noobie.svg';
+export { default as RisingTalentBadgeSvg } from './Rising Talent.svg';
+export { default as RookieBadgeSvg } from './Rookie.svg';
+export { default as TopProBadgeSvg } from './Top Pro.svg';
 
 // Notification Icons
 export { default as ReadSvg } from './read.svg';
@@ -78,6 +84,8 @@ export { default as EmptyNotificationSvg } from './emptynotification.svg';
 // Email Icons
 export { default as SendSvg } from './send.svg';
 export { default as AttachmentSvg } from './attachment.svg';
+export { default as Send2Svg } from './send-2.svg';
+
 
 // Chat Icons
 export { default as EmptyChatSvg } from './emptychat.svg';

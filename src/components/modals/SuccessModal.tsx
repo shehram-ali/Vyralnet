@@ -7,9 +7,9 @@ import {
   Animated,
   StyleSheet,
   Dimensions,
+  Platform,
 } from 'react-native';
 import LottieView from 'lottie-react-native';
-import { CheckmarkAnimation } from '../../../assets/animations';
 
 const { height } = Dimensions.get('window');
 
@@ -30,6 +30,7 @@ export default function SuccessModal({
 }: SuccessModalProps) {
   const slideAnim = useRef(new Animated.Value(height)).current;
   const lottieRef = useRef<LottieView>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (visible) {
@@ -42,14 +43,35 @@ export default function SuccessModal({
         tension: 65,
         friction: 11,
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        playLottie();
+      });
 
-      // Play Lottie animation
-      setTimeout(() => {
-        lottieRef.current?.play();
-      }, 300);
+      // REPLAY EVERY 3 SECONDS
+      intervalRef.current = setInterval(() => {
+        playLottie();
+      }, 3000);
+    } else {
+      // Clear interval when modal closes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [visible]);
+
+  const playLottie = () => {
+    if (!lottieRef.current) return;
+    lottieRef.current.reset();
+    lottieRef.current.play();
+  };
 
   return (
     <Modal
@@ -78,8 +100,12 @@ export default function SuccessModal({
             <View style={styles.checkmarkContainer}>
               <LottieView
                 ref={lottieRef}
-                source={CheckmarkAnimation}
+                source={require('../../../assets/animations/green-tick.json')}
+                autoPlay={false}
                 loop={false}
+                speed={0.5}
+                resizeMode="cover"
+                hardwareAccelerationAndroid={true}
                 style={styles.lottieAnimation}
               />
             </View>
@@ -134,34 +160,35 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   contentContainer: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   checkmarkContainer: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   lottieAnimation: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#000',
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1D1C1C',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
     paddingHorizontal: 10,
   },
   description: {
-    fontSize: 15,
-    color: '#666',
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#6C727F',
     textAlign: 'center',
     marginBottom: 32,
-    lineHeight: 22,
+    // lineHeight: 22,
     paddingHorizontal: 10,
   },
   button: {
@@ -174,6 +201,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

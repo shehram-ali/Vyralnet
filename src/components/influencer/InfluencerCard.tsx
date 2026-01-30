@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { InstagramFillSvg, InstagramSvg } from '../../../assets/images';
+import { InstagramFillSvg } from '../../../assets/images';
 import StatsBadge from './StatsBadge';
 import { Influencer } from '../../data/mockInfluencers';
 
@@ -16,18 +16,39 @@ export default function InfluencerCard({
   onPress,
   onToggleFavorite,
 }: InfluencerCardProps) {
+  // Category colors
+  const getCategoryColor = (index: number) => {
+    const colors = [
+      { bg: '#F1FFE2', text: '#006400' }, // Green
+      { bg: '#EDEDED', text: '#6C727F' }, // Gray
+    ];
+    return colors[index % colors.length];
+  };
+
   return (
     <TouchableOpacity
       onPress={() => onPress(influencer.id)}
       activeOpacity={0.7}
-      className="bg-white rounded-2xl p-0 mb-3 overflow-hidden shadow-sm"
+      className="bg-white rounded-2xl mb-3 overflow-hidden"
+      style={{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
+      }}
     >
       <View className="flex-row">
         {/* Left Side - Avatar with Heart Overlay */}
-        <View className="relative" style={{ width: 140, height: 140 }}>
+        <View className="relative justify-center items-center mx-2" >
           <Image
             source={influencer.avatar}
-            style={{ width: 140, height: 140, borderTopLeftRadius: 16, borderBottomLeftRadius: 16 }}
+            style={{
+              width: 140,
+              height: 140,
+              borderTopLeftRadius: 16,
+              borderBottomLeftRadius: 16,
+            }}
             resizeMode="cover"
           />
           {/* Heart Icon Overlay */}
@@ -39,78 +60,74 @@ export default function InfluencerCard({
             activeOpacity={0.7}
             style={{
               position: 'absolute',
-              bottom: 12,
-              left: 55,
+              bottom: 16,
+              left: '50%',
+              marginLeft: -18,
               backgroundColor: 'white',
-              borderRadius: 20,
-              width: 24,
-              height: 24,
-              alignItems: 'center',
-              justifyContent: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
-              shadowRadius: 4,
-              elevation: 3,
-            }}
-          >
-            <MaterialCommunityIcons
-              name={influencer.isFavorite ? 'heart' : 'heart-outline'}
-              size={16}
-              color={influencer.isFavorite ? '#FF0000' : '#666'}
-            />
-          </TouchableOpacity>
-
-          {/* Instagram Icon - Top Right of Image */}
-          {/* <View
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              backgroundColor: 'white',
-              borderRadius: 20,
+              borderRadius: 18,
               width: 36,
               height: 36,
               alignItems: 'center',
               justifyContent: 'center',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.15,
+              shadowOpacity: 0.2,
               shadowRadius: 4,
-              elevation: 3,
+              elevation: 4,
             }}
           >
-           
-          </View> */}
+            <MaterialCommunityIcons
+              name={influencer.isFavorite ? 'heart' : 'heart-outline'}
+              size={20}
+              color={influencer.isFavorite ? '#FF0000' : '#666'}
+            />
+          </TouchableOpacity>
         </View>
 
         {/* Right Side - Info */}
-        <View className="flex-1 px-1 py-3 justify-between">
-          
-          {/* Name + Verified */}
-          <View >
-            <View className="flex-row justify-between mb-1">
-              <View className="flex-row items-center flex-1">
-              <Text className="text-lg font-bold text-black mr-1" numberOfLines={1}>
+        <View className="flex-1 py-3 pr-3 pl-2">
+          {/* Name + Verified + Instagram */}
+          <View className="flex-row items-start justify-between mb-1">
+             <View>
+            <View className="flex-row items-center flex-1">
+             
+              <Text
+                className="text-base font-bold text-black mr-1"
+                numberOfLines={1}
+                style={{ fontSize: 16 }}
+              >
                 {influencer.name}
               </Text>
               {influencer.verified && (
-                <MaterialCommunityIcons name="check-decagram" size={18} color="#2196F3" />
+                <MaterialCommunityIcons name="check-decagram" size={12} color="#000" />
               )}
-              </View>
-              <TouchableOpacity activeOpacity={0.7}>
-              <InstagramFillSvg width={18} height={18} />
-            </TouchableOpacity>
             </View>
-
-            {/* Username */}
-            <Text className="text-sm text-gray-500 mb-3">{influencer.username}</Text>
-             
+            <Text className="text-xs text-gray-500 mb-2">{influencer.username}</Text>
+            </View>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 12,
+                width: 24,
+                height: 24,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: '#E5E5E5',
+                
+              }}
+            >
+              <InstagramFillSvg width={16} height={20} />
+            </TouchableOpacity>
           </View>
+
+          {/* Username */}
+          
 
           {/* Stats Badge */}
           {influencer.stats && (
-            <View className='mb-2 overflow-hidden bg-background  rounded-lg'>
+            <View className="mb-3">
               <StatsBadge
                 score={influencer.stats.xpScore}
                 tier={influencer.stats.tier}
@@ -122,22 +139,25 @@ export default function InfluencerCard({
           )}
 
           {/* Category Pills */}
-          <View className="flex-row flex-wrap overflow-hidden px-2">
-            {influencer.categories && influencer.categories.slice(0, 2).map((category, index) => (
-              <View
-                key={index}
-                className="px-3 py-1.5 rounded-md mr-2 mb-1"
-                style={{ backgroundColor: '#E8F5E9' }}
-              >
-                <Text
-                  className="text-xs font-medium"
-                  style={{ color: '#4CAF50' }}
-                >
-                  {category}
-                </Text>
-              </View>
-            ))}
-
+          <View className="flex-row flex-wrap">
+            {influencer.categories &&
+              influencer.categories.slice(0, 2).map((category, index) => {
+                const colors = getCategoryColor(index);
+                return (
+                  <View
+                    key={index}
+                    className="px-3 py-2 rounded-xl mr-2 mb-1"
+                    style={{ backgroundColor: colors.bg }}
+                  >
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: colors.text }}
+                    >
+                      {category}
+                    </Text>
+                  </View>
+                );
+              })}
           </View>
         </View>
       </View>

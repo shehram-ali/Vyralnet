@@ -7,16 +7,23 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    // "icon": "./assets/icon.png",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vyralnet.app"
+      "bundleIdentifier": "com.vyralnet.app",
+      // "icon": "./assets/icon.png"
     },
     "android": {
-      "package": "com.vyralnet.app"
+      "package": "com.vyralnet.app",
+      "softInputMode": "adjustResize",
+      "adaptiveIcon": {
+        // "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      }
     },
     "plugins": [
       "expo-router",
@@ -30,5 +37,6 @@
         "projectId": "d00515c8-8cc3-4e56-b385-408a38fd6475"
       }
     }
+    
   }
 }

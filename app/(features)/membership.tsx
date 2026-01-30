@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,7 @@ export default function MembershipScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-5 pt-10 py-4 bg-[#F8F8FB]">
+      <View className="flex-row items-center px-5 py-4 bg-[#F8F8FB]" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
           <MaterialCommunityIcons name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface HomeHeaderProps {
@@ -12,8 +12,8 @@ interface HomeHeaderProps {
 
 export default function HomeHeader({ userName, userAvatar, showFavoriteIcon = false, onFavoritePress, onNotificationPress }: HomeHeaderProps) {
   return (
-    <View className="flex-row items-center pt-10 justify-between px-5 py-4 bg-[#F8F8FB]">
-      {/* Left side - Avatar and Name */}
+    <View className="flex-row items-center justify-between px-5 bg-[#F8F8FB]" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40, paddingBottom: 16 }}>
+      {/* Left side - Avatar and Name */} 
       <View className="flex-row items-center flex-1">
         {userAvatar ? (
           <Image

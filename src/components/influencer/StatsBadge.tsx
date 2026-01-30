@@ -1,102 +1,101 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { WizardBadge1Svg, WizardBadge2Svg } from '../../../assets/images';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  NoobieBadgeSvg,
+  RisingTalentBadgeSvg,
+  RookieBadgeSvg,
+  TopProBadgeSvg,
+} from '../../../assets/images';
 
 interface StatsBadgeProps {
   score: number;
-  tier: 'Top Pro' | 'Rising Talent' | 'Pro';
-  badge: 'purple' | 'gold';
+  tier: 'Top Pro' | 'Rising Talent' | 'Pro' | 'Rookie' | 'Noobie';
+  badge?: 'purple' | 'gold';
   showProgressBar?: boolean;
   size?: 'small' | 'large';
+  maxScore?: number;
 }
 
 export default function StatsBadge({
   score,
   tier,
-  badge,
   showProgressBar = true,
   size = 'small',
+  maxScore = 1000,
 }: StatsBadgeProps) {
   const isSmall = size === 'small';
 
-  // Calculate progress percentage (assuming max score is 500)
-  const progressPercentage = Math.min((score / 500) * 100, 100);
-  const totalDots = 20; // Total number of dots in progress bar
-  const filledDots = Math.round((progressPercentage / 100) * totalDots);
+  // Calculate progress percentage
+  const progressPercentage = Math.min((score / maxScore) * 100, 100);
 
   // Choose badge based on tier
-  const BadgeIcon = badge === 'purple' ? WizardBadge1Svg : WizardBadge2Svg;
+  const getBadgeIcon = () => {
+    switch (tier) {
+      case 'Top Pro':
+        return <TopProBadgeSvg width={ 26} height={ 31} />;
+      case 'Rising Talent':
+        return <RisingTalentBadgeSvg width={ 26} height={ 31} />;
+      case 'Rookie':
+        return <RookieBadgeSvg width={ 26} height={ 31} />;
+      case 'Noobie':
+        return <NoobieBadgeSvg width={ 26} height={ 31} />;
+      default:
+        return <RookieBadgeSvg width={ 26} height={ 31} />;
+    }
+  };
 
   return (
-    <View style={{ width: '100%' }}>
-      {/* Badge + Score + Tier Row */}
-      <View className="flex-row items-center justify-between mb-1">
-        {/* Left Side: Badge + Score */}
-        <View className="flex-row items-center">
-          {/* Badge Icon */}
-          <View >
-            <BadgeIcon width={isSmall ? 32 : 40} height={isSmall ? 32 : 40} />
-          </View>
-
+    <View style={{ width: '100%', padding: 4, borderRadius: 8, backgroundColor: '#F8F8FB' }}>
+      <View className="flex-row items-center justify-between">
+        {/* Left Side: Score and Progress */}
+        <View className="flex-1 mr-2">
           {/* Score */}
-          <View>
-          <Text
-            className="font-bold"
-            style={{ fontSize:  14 , color: '#000' }}
-          >
+          <View className='flex-row items-center'>
+          <Text className="text-xs font-semibold text-black">
             {score}
           </Text>
-          <Text
-        className="text-gray-500"
-        style={{ fontSize: 6, marginBottom: 6 }}
-      >
-        XP ON ACCOUNT
-      </Text>
-       {/* Dotted Progress Bar */}
-        {showProgressBar && (
-          <View className="flex-row items-center pr-2" style={{ gap: 2 }}>
-            {Array.from({ length: totalDots }).map((_, index) => (
-              <View
-                key={index}
-                style={{
-                  width: 5,
-                  height: 6,
-                  borderRadius: 1,
+          <Text className="text-[8px] font-semibold text-[#6C727F]">
+            /{maxScore}
+          </Text>
+          </View>
+          <Text className="text-[6px] text-[#1D1C1C] mb-1">XP ON ACCOUNT</Text>
 
-                  backgroundColor: index < filledDots ? '#4CAF50' : '#E5E5E5',
+          {/* Progress Bar */}
+          {showProgressBar && (
+            <View
+              style={{
+                height: 12,
+                backgroundColor: '#E5E5E5',
+                borderRadius: 40,
+                overflow: 'hidden',
+                width: '100%',
+                justifyContent:'center',
+                // alignItems: 'center'
+              }}
+            >
+              <LinearGradient
+                colors={['#9B7EDB', '#DDA15E']}
+                start={[0, 0]}
+                end={[1, 0]}
+                style={{
+                  height: 8,
+                  width: `${progressPercentage}%`,
+                  borderRadius: 40,
                 }}
               />
-            ))}
-          </View>
-        )}
-      </View>
-      
+            </View>
+          )}
         </View>
 
-        {/* Right Side: Tier Badge */}
-        <View
-          className="px-2 py-1"
-          style={{
-            backgroundColor: 'transparent',
-          }}
-        >
-          <Text
-            className="font-semibold"
-            style={{
-              fontSize: 10,
-              color: '#000',
-              letterSpacing: 0.5,
-            }}
-          >
+        {/* Right Side: Badge and Tier */}
+        <View className="items-end">
+          <Text className="text-[8px] font-semibold text-[#1D1C1C] mb-1">
             {tier.toUpperCase()}
           </Text>
+          {getBadgeIcon()}
         </View>
       </View>
-
-      {/* XP Label */}
-      
-
-     
     </View>
   );
 }

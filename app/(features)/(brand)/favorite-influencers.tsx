@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import { mockInfluencers, Influencer, availableCategories } from '../../../src/d
 import InfluencerCard from '../../../src/components/influencer/InfluencerCard';
 import FilterBottomSheet, { FilterState } from '../../../src/components/influencer/FilterBottomSheet';
 import CategoryPickerBottomSheet from '../../../src/components/influencer/CategoryPickerBottomSheet';
+import { SearchBar } from '../../../src/components/common';
 import { ROUTES } from '../../../src/constants';
 import Feather from '@expo/vector-icons/Feather';
 export default function FavoriteInfluencersScreen() {
@@ -93,8 +94,8 @@ export default function FavoriteInfluencersScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center mt-10 justify-between px-5 py-4 bg-white">
-        <View className="flex-row items-center flex-1">
+      <View className="flex-row items-center  justify-between px-5 py-4 bg-white">
+        <View className="flex-row items-center flex-1" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
           <TouchableOpacity
             onPress={() => router.back()}
             activeOpacity={0.7}
@@ -118,16 +119,7 @@ export default function FavoriteInfluencersScreen() {
         <Text className="text-2xl font-bold text-black mb-4">All Influencers</Text>
 
         {/* Search Bar */}
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 mb-6 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={20} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Search"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
         </View>
       {/* Influencer List */}
       <FlatList

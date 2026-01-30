@@ -2,15 +2,13 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Feather from '@expo/vector-icons/Feather';
 import { Frame1984077131Svg, InstagramSvg } from '../../../assets/images';
+import { SearchBar, Header } from '../../../src/components/common';
 import FilterBottomSheet, {
   FilterState,
 } from '../../../src/components/influencer/FilterBottomSheet';
@@ -86,7 +84,6 @@ const influencerCategories = [
 ];
 
 export default function FindInfluencerScreen() {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
@@ -205,15 +202,18 @@ export default function FindInfluencerScreen() {
               <Frame1984077131Svg width={40} height={40} />
             </View>
             <View className="ml-3 flex-1">
-              <View className="flex-row items-center">
+              <View className="flex-row items-center gap-2">
+              <View className="">
                 <Text className="text-sm font-bold text-black mr-2">{item.name}</Text>
-                <InstagramSvg width={20} height={20}/>
+                <Text className="text-xs text-#76767CCC">{item.username}</Text>
               </View>
-              <Text className="text-xs text-#76767CCC">{item.username}</Text>
+              
+              <InstagramSvg width={20} height={20}/>
+              </View>
             </View>
           </View>
           <View
-            className="w-5 h-5 rounded border-2 items-center justify-center"
+            className="w-5 h-5 rounded border-[1px] items-center justify-center"
             style={{
               borderColor: isSelected ? '#5EBD3E' : '#D1D5DB',
               backgroundColor: isSelected ? '#5EBD3E' : 'transparent',
@@ -229,29 +229,29 @@ export default function FindInfluencerScreen() {
         <View className="flex-row justify-between mb-3">
           <View className="flex-1">
             <Text className="text-xs text-[#6C727F] mb-1">Followers</Text>
-            <Text className="text-sm font-semibold text-black">{item.followers}</Text>
+            <Text className="text-sm  text-black">{item.followers}</Text>
           </View>
           <View className="flex-1">
             <Text className="text-xs text-[#6C727F] mb-1">ER</Text>
-            <Text className="text-sm font-semibold text-black">
+            <Text className="text-sm  text-black">
               {item.engagementRate}
             </Text>
           </View>
           <View className="flex-1">
             <Text className="text-xs text-[#6C727F] mb-1">Email</Text>
-            <Text className="text-sm font-semibold text-black">
+            <Text className="text-sm  text-black">
               {item.hasEmail ? 'Yes' : 'No'}
             </Text>
           </View>
         </View>
-
+<View className='h-[1px] bg-[#E1E1E1] my-2'></View>
         {/* Categories */}
         {item.categories && item.categories.length > 0 && (
           <View className="flex-row flex-wrap">
             {item.categories.map((category, index) => (
               <View
                 key={index}
-                className="px-3 py-2 rounded-md mr-2 mb-1"
+                className="px-3 py-2 rounded-full mr-2 mb-1"
                 style={{ backgroundColor: '#E0F6C6' }}
               >
                 <Text className="text-xs font-medium text-black" >
@@ -267,18 +267,12 @@ export default function FindInfluencerScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between pt-10 px-5 py-4 bg-[#F8F8FB]">
-        <View className="flex-row items-center flex-1">
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-            <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold text-black ml-4">Find Influencer</Text>
-        </View>
-        <TouchableOpacity onPress={() => setShowFilterSheet(true)} activeOpacity={0.7}>
-          <Feather name="filter" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Find Influencer"
+        rightIcons={[
+          { type: 'filter', onPress: () => setShowFilterSheet(true) }
+        ]}
+      />
 
       {/* All Influencers Heading */}
       <View className="px-5 pt-3 pb-3 bg-[#F8F8F8]">
@@ -287,16 +281,12 @@ export default function FindInfluencerScreen() {
 
       {/* Search Bar */}
       <View className="px-5 pb-3 bg-[#F8F8F8]">
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 shadow-sm">
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" />
-          <TextInput
-            className="flex-1 ml-2 text-base text-black"
-            placeholder="Enter Category"
-            placeholderTextColor="#999"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Enter Category"
+          containerStyle={{ marginBottom: 0 }}
+        />
       </View>
 
       {/* Select All */}
@@ -305,14 +295,14 @@ export default function FindInfluencerScreen() {
         <TouchableOpacity
           onPress={toggleSelectAll}
           activeOpacity={0.7}
-          className="w-4 h-4 rounded border-2 items-center justify-center"
+          className="w-5 h-5 rounded border-2 items-center justify-center"
           style={{
             borderColor: isAllSelected ? '#5EBD3E' : '#D1D5DB',
             backgroundColor: isAllSelected ? '#5EBD3E' : 'transparent',
           }}
         >
           {isAllSelected && (
-            <MaterialCommunityIcons name="check" size={10} color="#FFF" />
+            <MaterialCommunityIcons name="check" size={16} color="#FFF" />
           )}
         </TouchableOpacity>
       </View>

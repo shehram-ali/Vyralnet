@@ -247,7 +247,7 @@ export default function EditPackagesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#F8F8FB]" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center pt-10 px-5 py-4 bg-[#F8F8FB]">
+      <View className="flex-row items-center px-5 py-4 bg-[#F8F8FB]" style={{ paddingTop: Platform.OS === 'ios' ? 0 : 40 }}>
         <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
           <MaterialCommunityIcons name="chevron-left" size={28} color="#000" />
         </TouchableOpacity>

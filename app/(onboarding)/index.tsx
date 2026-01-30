@@ -9,8 +9,10 @@ import {
   Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ROUTES } from '../../src/constants';
 import { InfluencerSlide1, InfluencerSlide2, InfluencerSlide3 } from '../../assets/images';
+import { StatusBar } from 'expo-status-bar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,7 +20,7 @@ const slides = [
   {
     id: 1,
     img: InfluencerSlide1,
-    title: 'Social media stardom —\ncheaper. Do just figure.',
+    title: 'Social media, gamified — \n Compete. Get paid. Repeat.',
     description: "You vs one creator. One battle. One payout. For once, the algorithm doesn't decide who wins.",
     showSignUp: false,
     showLogin: false,
@@ -29,7 +31,7 @@ const slides = [
   {
     id: 2,
     img: InfluencerSlide2,
-    title: '32 Creators. 4 Rounds. Only 16 Survive.',
+    title: '32 Creators. 4 Rounds. Only \n 16 Survive.',
     description: 'Your real goes one-on-one — vote for view. Win the matchup. Advance. Get paid more each round.',
     showSignUp: false,
     showLogin: false,
@@ -44,15 +46,16 @@ const slides = [
     description: 'Free to play. Real reviews. Brand-sponsored tournaments. Win up to $5,000 in 4 days.',
     showSignUp: false,
     showLogin: false,
-    showNext: false,
+    showNext: true,
     showSkip: false,
-    showGetStarted: true,
+    showGetStarted: false,
   },
 ];
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const handleScroll = (event: any) => {
@@ -60,9 +63,9 @@ export default function OnboardingScreen() {
     setCurrentIndex(slideIndex);
   };
 
-  // Auto-scroll to next slide every 2 seconds
+  // Auto-scroll to next slide every 2 seconds (only when not paused)
   useEffect(() => {
-    if (currentIndex < slides.length - 1) {
+    if (currentIndex < slides.length - 1 && !isPaused) {
       const timer = setTimeout(() => {
         scrollViewRef.current?.scrollTo({
           x: (currentIndex + 1) * width,
@@ -74,7 +77,7 @@ export default function OnboardingScreen() {
       return () => clearTimeout(timer);
     }
 
-  }, [currentIndex]);
+  }, [currentIndex, isPaused]);
 
   const handleNext = () => {
     if (currentIndex < 2) {
@@ -83,7 +86,7 @@ export default function OnboardingScreen() {
         animated: true,
       });
     } else {
-      router.replace(ROUTES.ONBOARDING.SIGNUP_OPTIONS);
+      router.replace(ROUTES.AUTH.LOGIN);
     }
   };
 
@@ -100,7 +103,13 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+       <StatusBar translucent backgroundColor="transparent" />
+
       {/* Slides */}
       <ScrollView
         ref={scrollViewRef}
@@ -113,15 +122,30 @@ export default function OnboardingScreen() {
       >
         {slides.map((slide, index) => (
           <View key={slide.id} style={[styles.slide, { width }]}>
-            <View style={styles.imageContainer}>
-              <Image
-                source={slide.img}
-                style={styles.slideImage}
-                resizeMode="cover"
-              />
-            </View>
+            {index === 0 ? (
+              <LinearGradient
+                colors={['#DDA15E', '#9B7EDB']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.imageContainer}
+              >
+                <Image
+                  source={slide.img}
+                  style={styles.slideImage}
+                  resizeMode="cover"
+                />
+              </LinearGradient>
+            ) : (
+              <View style={[styles.imageContainer, { backgroundColor: index === 1 ? '#6CBEEF' : '#F5B22D' }]}>
+                <Image
+                  source={slide.img}
+                  style={styles.slideImage}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
             <View style={styles.contentContainer}>
-              <Text style={styles.title}>{slide.title}</Text>
+                <Text style={styles.title}>{slide.title}</Text>
               {slide.description ? <Text style={styles.description}>{slide.description}</Text> : null}
 
               <View style={styles.dotsContainer}>
@@ -147,20 +171,18 @@ export default function OnboardingScreen() {
 
               {slide.showNext && (
                 <TouchableOpacity style={styles.nextButton} onPress={handleNext} activeOpacity={0.8}>
-                  <Text style={styles.nextButtonText}>Next</Text>
+                  <Text style={styles.nextButtonText}>
+                    {index === 2 ? 'Get Started' : 'Next'}
+                  </Text>
                 </TouchableOpacity>
               )}
 
-              {slide.showSkip && (
+              {slide.showSkip ? (
                 <TouchableOpacity onPress={handleSkip} style={styles.skipLink}>
                   <Text style={styles.skipLinkText}>Skip</Text>
                 </TouchableOpacity>
-              )}
-
-              {slide.showGetStarted && (
-                <TouchableOpacity style={styles.getStartedButton} onPress={handleNext} activeOpacity={0.8}>
-                  <Text style={styles.getStartedButtonText}>Get Started</Text>
-                </TouchableOpacity>
+              ) : (
+                <View style={styles.skipPlaceholder} />
               )}
             </View>
           </View>
@@ -177,11 +199,11 @@ const styles = StyleSheet.create({
   },
   slide: {
     flex: 1,
-    justifyContent: 'space-between',
+    position: 'relative',
   },
   imageContainer: {
     width: width,
-    height: height * 0.55,
+    height: height * 0.70,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -190,27 +212,35 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   contentContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFF',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingHorizontal: 30,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    paddingHorizontal: 15,
     paddingTop: 20,
     paddingBottom: 60,
-    minHeight: height * 0.45,
+    minHeight: height * 0.43,
+    overflow: 'hidden',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    // fontWeight: 'semibold',
+    fontWeight:'600',
     color: '#000',
     textAlign: 'center',
     marginBottom: 16,
-    lineHeight: 32,
+    marginTop: 10,
+    lineHeight: 26,
   },
   description: {
     fontSize: 14,
-    color: '#666',
+    color: '#999797',
+    fontWeight:'400',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 34,
     lineHeight: 20,
   },
   dotsContainer: {
@@ -218,16 +248,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
+    paddingTop:24,
+    
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E5E5E5',
+
+    backgroundColor: '#D1EDC8',
     marginHorizontal: 4,
   },
   dotActive: {
-    width: 24,
+    width: 32,
     backgroundColor: '#4CAF50',
   },
   signUpButton: {
@@ -268,7 +301,11 @@ const styles = StyleSheet.create({
   skipLinkText: {
     color: '#4CAF50',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  skipPlaceholder: {
+    height: 22,
+    alignItems: 'center',
   },
   getStartedButton: {
     backgroundColor: '#4CAF50',
